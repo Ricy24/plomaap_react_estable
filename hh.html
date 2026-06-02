@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlomApp - Configura tu Servicio</title>
+    <!-- Fuente Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Iconos FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --text-dark: #1a1a1a;
+            --text-gray: #8b8b8b;
+            --accent-red: #ff4757;
+            --white: #ffffff;
+            --card-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--white); /* Ahora el fondo principal es blanco */
+            color: var(--text-dark);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden; /* Evita el scroll para que actúe como una app nativa */
+        }
+
+        /* Contenedor principal 100% Full Screen */
+        .app-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--white);
+        }
+
+        /* --- HEADER --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 6vw; /* Padding responsivo basado en el viewport */
+            background: var(--white);
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.5px;
+            color: var(--text-dark);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 50px;
+            font-weight: 500;
+            font-size: 1rem;
+            color: var(--text-gray);
+        }
+
+        .nav-links span {
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .nav-links span.active, .nav-links span:hover {
+            color: var(--text-dark);
+        }
+
+        .header-icons {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            color: var(--text-dark);
+            font-size: 1.2rem;
+        }
+
+        .profile-img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--bg-color);
+        }
+
+        /* --- CUERPO PRINCIPAL DIVIDIDO --- */
+        .main-content {
+            display: flex;
+            flex: 1;
+            padding: 0 6vw 4vh 6vw;
+            gap: 4vw; /* Separación entre paneles */
+        }
+
+        /* --- PANEL IZQUIERDO (Visual y Resumen) --- */
+        .left-panel {
+            flex: 1.2;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Círculo decorativo reubicado para no saturar */
+        .bg-circle {
+            position: absolute;
+            top: -10vh;
+            left: -5vw;
+            width: 40vw;
+            height: 40vw;
+            background-color: var(--bg-color);
+            border-radius: 50%;
+            z-index: 0;
+            opacity: 0.6;
+        }
+
+        .presentation-data {
+            position: relative;
+            z-index: 1;
+            margin-top: 2vh;
+        }
+
+        #service-title {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 5px;
+            color: var(--text-dark);
+        }
+
+        #service-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-gray);
+            font-weight: 400;
+            margin-bottom: 3vh;
+        }
+
+        /* Cajas de información */
+        .info-label {
+            font-size: 0.95rem;
+            color: var(--text-gray);
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .info-boxes {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 4vh;
+        }
+
+        .info-box {
+            background: var(--bg-color);
+            padding: 15px 25px;
+            border-radius: 15px;
+            text-align: center;
+            min-width: 120px;
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+
+        .info-box h4 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .info-box p {
+            font-size: 0.8rem;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+        }
+
+        /* NUEVO: Imagen Principal Armonizada */
+        .main-image-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 35vh; /* Altura dinámica */
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08); /* Sombra elegante */
+            background: var(--bg-color);
+        }
+
+        .main-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Llena el contenedor sin deformarse, parece un cuadro */
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        /* Acción de Compra / Cotizar */
+        .bottom-action {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            margin-top: auto;
+            position: relative;
+            z-index: 1;
+            padding-bottom: 1vh;
+        }
+
+        .price-display p {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .price-display h2 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .btn-cta {
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            box-shadow: 0 10px 25px rgba(255, 71, 87, 0.3);
+            transition: 0.3s;
+        }
+
+        .btn-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(255, 71, 87, 0.4);
+        }
+
+        /* --- PANEL DERECHO (Configurador) --- */
+        .right-panel {
+            flex: 0.9;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .right-panel h3 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 5vh;
+            color: var(--text-dark);
+        }
+
+        /* Categorías principales (Cuadrados) */
+        .config-section {
+            margin-bottom: 5vh;
+        }
+
+        .section-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-gray);
+        }
+
+        .category-grid {
+            display: flex;
+            gap: 15px;
+        }
+
+        .category-btn {
+            width: 75px;
+            height: 75px;
+            background: var(--bg-color);
+            border: 2px solid transparent;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .category-btn.active {
+            background: var(--white);
+            border-radius: 0 18px 18px 0;
+            border-left: 5px solid var(--accent-red);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+        }
+
+        /* Sub-opciones (Píldoras verticales) */
+        .options-grid {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .option-pill {
+            background: var(--bg-color);
+            width: 110px;
+            height: 190px;
+            border-radius: 55px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 10px;
+            cursor: pointer;
+            transition: 0.3s;
+            position: relative;
+            border: 2px solid transparent;
+        }
+
+        .option-pill .icon-circle {
+            width: 55px;
+            height: 55px;
+            background: var(--white);
+            color: var(--text-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .option-pill p.base-price {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .option-pill p.opt-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-align: center;
+            color: var(--text-dark);
+        }
+
+        /* Check mark rojo */
+        .check-mark {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 22px;
+            height: 22px;
+            background: var(--accent-red);
+            color: white;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            box-shadow: 0 4px 10px rgba(255, 71, 87, 0.4);
+        }
+
+        .option-pill.active {
+            background: var(--white);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            border: 2px solid rgba(0,0,0,0.02);
+            transform: translateY(-5px);
+        }
+
+        .option-pill.active .check-mark {
+            display: flex;
+        }
+        
+        .option-pill.active .icon-circle {
+            background: var(--text-dark);
+            color: var(--white);
+        }
+
+        /* Animaciones */
+        .fade-out { opacity: 0; transform: scale(0.98); }
+        .fade-in { opacity: 1; transform: scale(1); }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+      
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            
+            <!-- PANEL IZQUIERDO -->
+            <div class="left-panel">
+                <div class="bg-circle"></div>
+
+                <div class="presentation-data">
+                    <h1 id="service-title">Fugas de Agua</h1>
+                    <p id="service-subtitle">Servicio de Plomería General</p>
+
+                    <div class="info-label">Evaluación IA Inicial:</div>
+                    <div class="info-boxes">
+                        <div class="info-box">
+                            <h4 id="info-time">1-2 h</h4>
+                            <p>Tiempo Est.</p>
+                        </div>
+                        <div class="info-box">
+                            <h4 id="info-warranty">30 Días</h4>
+                            <p>Garantía</p>
+                        </div>
+                        <div class="info-box">
+                            <h4 id="info-techs">45+</h4>
+                            <p>Técnicos</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Imagen ahora estructurada como un marco premium -->
+                <div class="main-image-container">
+                    <img id="main-image" src="https://images.unsplash.com/photo-1585704032915-c3400ca199e7?q=80&w=800&auto=format&fit=crop" alt="Servicio de PlomApp">
+                </div>
+
+                <div class="bottom-action">
+                    <div class="price-display">
+                        <p>Cotización Base</p>
+                        <h2 id="base-price">$45.000</h2>
+                    </div>
+                    <button class="btn-cta">
+                        Continuar <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- PANEL DERECHO -->
+            <div class="right-panel">
+                <h3>Detalles del problema</h3>
+
+                <!-- Categorías principales -->
+                <div class="config-section">
+                    <p class="section-title">Categoría de servicio:</p>
+                    <div class="category-grid" id="category-container">
+                        <!-- Generado por JS -->
+                    </div>
+                </div>
+
+                <!-- Sub-opciones de la categoría -->
+                <div class="config-section">
+                    <p class="section-title">Selecciona el requerimiento:</p>
+                    <div class="options-grid" id="options-container">
+                        <!-- Generado por JS -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- BASE DE DATOS LOCAL DE SERVICIOS ---
+        const servicesData = {
+            plomeria: {
+                id: 'plomeria',
+                icon: '<i class="fa-solid fa-faucet-drip"></i>',
+                defaultOption: 0,
+                options: [
+                    {
+                        name: "Fugas",
+                        priceLabel: "Desde $45k",
+                        icon: '<i class="fa-solid fa-droplet"></i>',
+                        title: "Fugas de Agua",
+                        subtitle: "Detección y Reparación",
+                        time: "1-2 h", warranty: "30 Días", techs: "45+",
+                        basePrice: "$45.000",
+                        image: "https://images.unsplash.com/photo-1585704032915-c3400ca199e7?q=80&w=800&auto=format&fit=crop"
+                    },
+                    {
+                        name: "Destape",
+                        priceLabel: "Desde $60k",
+                        icon: '<i class="fa-solid fa-sink"></i>',
+                        title: "Destape Cañerías",
+                        subtitle: "Mantenimiento Correctivo",
+                        time: "2-3 h", warranty: "15 Días", techs: "30+",
+                        basePrice: "$60.000",
+                        image: "https://images.unsplash.com/photo-1607472586893-edb57cbca132?q=80&w=800&auto=format&fit=crop"
+                    },
+                    {
+                        name: "Grifería",
+                        priceLabel: "Desde $35k",
+                        icon: '<i class="fa-solid fa-shower"></i>',
+                        title: "Instalación Grifería",
+                        subtitle: "Renovación de Baños",
+                        time: "1 h", warranty: "60 Días", techs: "50+",
+                        basePrice: "$35.000",
+                        image: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800&auto=format&fit=crop"
+                    }
+                ]
+            },
+            electricidad: {
+                id: 'electricidad',
+                icon: '<i class="fa-solid fa-bolt"></i>',
+                defaultOption: 0,
+                options: [
+                    {
+                        name: "Cortos",
+                        priceLabel: "Desde $50k",
+                        icon: '<i class="fa-solid fa-plug-circle-exclamation"></i>',
+                        title: "Cortocircuitos",
+                        subtitle: "Emergencia Eléctrica",
+                        time: "1-3 h", warranty: "30 Días", techs: "25+",
+                        basePrice: "$50.000",
+                        image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=800&auto=format&fit=crop"
+                    },
+                    {
+                        name: "Cableado",
+                        priceLabel: "Desde $120k",
+                        icon: '<i class="fa-solid fa-network-wired"></i>',
+                        title: "Nuevo Cableado",
+                        subtitle: "Instalación General",
+                        time: "5-8 h", warranty: "1 Año", techs: "15+",
+                        basePrice: "$120.000",
+                        image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=800&auto=format&fit=crop"
+                    }
+                ]
+            },
+            pintura: {
+                id: 'pintura',
+                icon: '<i class="fa-solid fa-brush"></i>', // Icono principal garantizado
+                defaultOption: 0,
+                options: [
+                    {
+                        name: "Interiores",
+                        priceLabel: "Por m²",
+                        icon: '<i class="fa-solid fa-fill-drip"></i>', // Icono de píldora reparado y visible
+                        title: "Pintura Interior",
+                        subtitle: "Acabados y Estuco Profesional",
+                        time: "1-2 Días", warranty: "6 Meses", techs: "40+",
+                        basePrice: "Cotizar m²",
+                        image: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?q=80&w=800&auto=format&fit=crop"
+                    }
+                ]
+            }
+        };
+
+        // --- REFERENCIAS DEL DOM ---
+        const categoryContainer = document.getElementById('category-container');
+        const optionsContainer = document.getElementById('options-container');
+        const mainImage = document.getElementById('main-image');
+        
+        // --- FUNCIÓN PARA RENDERIZAR LA UI ---
+        function loadCategory(categoryId) {
+            const category = servicesData[categoryId];
+            
+            // 1. Actualizar botones
+            categoryContainer.innerHTML = '';
+            for (const key in servicesData) {
+                const btn = document.createElement('div');
+                btn.className = `category-btn ${key === categoryId ? 'active' : ''}`;
+                btn.innerHTML = servicesData[key].icon;
+                btn.onclick = () => loadCategory(key);
+                categoryContainer.appendChild(btn);
+            }
+
+            // 2. Cargar Píldoras
+            renderOptions(category.options, category.defaultOption);
+        }
+
+        function renderOptions(options, activeIndex) {
+            optionsContainer.innerHTML = '';
+            
+            options.forEach((opt, index) => {
+                const pill = document.createElement('div');
+                pill.className = `option-pill ${index === activeIndex ? 'active' : ''}`;
+                
+                pill.innerHTML = `
+                    <div class="check-mark"><i class="fa-solid fa-check"></i></div>
+                    <div class="icon-circle">${opt.icon}</div>
+                    <p class="base-price">${opt.priceLabel}</p>
+                    <p class="opt-name">${opt.name}</p>
+                `;
+                
+                pill.onclick = () => {
+                    document.querySelectorAll('.option-pill').forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    updateLeftPanel(opt);
+                };
+
+                optionsContainer.appendChild(pill);
+            });
+
+            updateLeftPanel(options[activeIndex]);
+        }
+
+        function updateLeftPanel(data) {
+            mainImage.classList.remove('fade-in');
+            mainImage.classList.add('fade-out');
+            
+            setTimeout(() => {
+                document.getElementById('service-title').innerText = data.title;
+                document.getElementById('service-subtitle').innerText = data.subtitle;
+                document.getElementById('info-time').innerText = data.time;
+                document.getElementById('info-warranty').innerText = data.warranty;
+                document.getElementById('info-techs').innerText = data.techs;
+                document.getElementById('base-price').innerText = data.basePrice;
+                
+                mainImage.src = data.image;
+                
+                mainImage.classList.remove('fade-out');
+                mainImage.classList.add('fade-in');
+            }, 200);
+        }
+
+        // --- INICIAR LA APP ---
+        loadCategory('plomeria');
+
+    </script>
+</body>
+</html>

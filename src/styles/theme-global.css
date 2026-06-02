@@ -1,0 +1,415 @@
+/* ===== TEMA GLOBAL UNIFICADO ===== */
+:root {
+  /* Colors - Light Theme (Services) */
+  --light-bg: #f8f9fa;
+  --light-text: #1a1a1a;
+  --light-text-muted: #8b8b8b;
+  --light-white: #ffffff;
+
+  /* Colors - Dark Theme (Home) */
+  --dark-bg: #0f172a;
+  --dark-text: #ffffff;
+  --dark-text-muted: #cbd5e1;
+  --dark-light: #ffffff;
+
+  /* Accent Colors */
+  --accent-red: #ff4757;
+  --accent-green: #00b4d8;
+  --accent-brand: #03045e;
+
+  /* Shadows */
+  --shadow-sm: 0 5px 15px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.15);
+
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-smooth: 0.4s ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Outfit', 'Poppins', sans-serif;
+  overflow: hidden;
+}
+
+#root {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  overflow: hidden;
+  width: 100%;
+}
+
+/* ===== TRANSICIONES ENTRE VISTAS ===== */
+.view-transition {
+  animation: slideIn var(--transition-smooth) ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ===== PAGE LAYOUT ===== */
+.page-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  padding-left: 100px;
+}
+
+.page-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.page-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.page-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.page-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* ===== HEADER COMPONENT ===== */
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  padding: 10px 15px 10px 25px;
+  z-index: 40;
+  border-radius: 50px;
+  transition: all var(--transition-normal);
+  height: auto;
+  width: auto;
+  max-width: 90vw;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.header-content {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 40px;
+}
+
+/* Header Light Variant */
+.app-header.header-light {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Header Dark Variant */
+.app-header.header-dark {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.header-logo {
+  font-size: 1.3rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: -0.5px;
+  white-space: nowrap;
+}
+
+.app-header.header-light .header-logo {
+  color: var(--accent-brand);
+}
+
+.app-header.header-light .header-logo i {
+  color: var(--accent-green);
+}
+
+.app-header.header-dark .header-logo {
+  color: var(--light-white);
+}
+
+.app-header.header-dark .header-logo i {
+  color: var(--accent-green);
+}
+
+.header-auth {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: nowrap;
+}
+
+.btn-auth {
+  border: none;
+  padding: 10px 18px;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all var(--transition-normal);
+  font-family: 'Outfit', sans-serif;
+  white-space: nowrap;
+}
+
+/* Login Button */
+.btn-login {
+  background: transparent;
+  border: 2px solid currentColor;
+}
+
+.app-header.header-light .btn-login {
+  color: var(--light-text);
+  border-color: var(--light-text);
+}
+
+.app-header.header-light .btn-login:hover {
+  background: var(--light-text);
+  color: var(--light-white);
+}
+
+.app-header.header-dark .btn-login {
+  color: rgba(255, 255, 255, 0.8);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.app-header.header-dark .btn-login:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Register Button */
+.btn-register {
+  font-weight: 700;
+}
+
+.app-header.header-light .btn-register {
+  background: var(--accent-brand);
+  color: white;
+  border: 2px solid var(--accent-brand);
+}
+
+.app-header.header-light .btn-register:hover {
+  background: #020344;
+  border-color: #020344;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(3, 4, 94, 0.3);
+}
+
+.app-header.header-dark .btn-register {
+  background: var(--accent-red);
+  color: white;
+  border: 2px solid var(--accent-red);
+}
+
+.app-header.header-dark .btn-register:hover {
+  background: #ff2a3a;
+  border-color: #ff2a3a;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 71, 87, 0.3);
+}
+
+/* ===== FLOATING NAV MEJORADO ===== */
+.floating-nav {
+  position: fixed;
+  left: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 12px;
+  border-radius: 60px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  transition: all var(--transition-normal);
+}
+
+/* Tema para Home (oscuro) */
+.floating-nav.theme-dark {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Tema para Services (claro) */
+.floating-nav.theme-light {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+}
+
+.nav-item {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  font-size: 1.2rem;
+  position: relative;
+  border: 2px solid transparent;
+}
+
+/* Tema oscuro - nav items */
+.floating-nav.theme-dark .nav-item {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.floating-nav.theme-dark .nav-item:hover {
+  color: rgba(255, 255, 255, 1);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.floating-nav.theme-dark .nav-item.active {
+  background: rgba(255, 255, 255, 1);
+  color: var(--dark-bg);
+  box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
+}
+
+/* Tema claro - nav items */
+.floating-nav.theme-light .nav-item {
+  color: var(--light-text-muted);
+}
+
+.floating-nav.theme-light .nav-item:hover {
+  color: var(--light-text);
+  background: var(--light-bg);
+}
+
+.floating-nav.theme-light .nav-item.active {
+  background: var(--light-text);
+  color: var(--light-white);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* Tooltip */
+.nav-item::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 75px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.floating-nav.theme-dark .nav-item::after {
+  background: var(--light-white);
+  color: var(--dark-bg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.floating-nav.theme-light .nav-item::after {
+  background: var(--light-text);
+  color: var(--light-white);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.nav-item:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ===== LINEAS DECORATIVAS CURVAS ===== */
+.nav-curve-decorator {
+  position: absolute;
+  width: 2px;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0)
+  );
+}
+
+.floating-nav.theme-light .nav-curve-decorator {
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0));
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .floating-nav {
+    left: auto;
+    right: 20px;
+    top: auto;
+    bottom: 20px;
+    transform: none;
+    flex-direction: row;
+    border-radius: 50px;
+    padding: 12px 20px;
+  }
+
+  .nav-item::after {
+    display: none;
+  }
+
+  .app-header {
+    padding: 10px 15px 10px 25px;
+    top: 10px;
+  }
+
+  .header-content {
+    gap: 20px;
+  }
+
+  .header-auth {
+    gap: 8px;
+  }
+
+  .btn-auth {
+    padding: 8px 12px;
+    font-size: 0.75rem;
+  }
+}
