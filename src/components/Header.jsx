@@ -1,22 +1,21 @@
-function Header({ showAuthButtons = true, variant = 'light' }) {
+function Header({ onLogin }) {
   return (
-    <header className={`app-header header-${variant}`}>
-      <div className="header-content">
-        <div className="header-logo">
-          <i className="fa-solid fa-wrench"></i>
-          <span>tech_connect_pro</span>
-        </div>
+    <header className="elegant-header">
+      <div className="header-logo">
+        <div className="logo-dot"></div>
+        <span>PlomApp</span>
+      </div>
+      
+      <nav className="header-nav">
+        <a href="#inicio">Inicio</a>
+        <a href="#como-funciona">El Proceso</a>
+        <a href="#garantias">Seguridad</a>
+        <a href="#tecnicos">Para Técnicos</a>
+      </nav>
 
-        {showAuthButtons && (
-          <div className="header-auth">
-            <button className="btn-auth btn-login">
-              <i className="fa-solid fa-sign-in-alt"></i> Ingresar
-            </button>
-            <button className="btn-auth btn-register">
-              <i className="fa-solid fa-user-plus"></i> Registrarse
-            </button>
-          </div>
-        )}
+      <div className="header-auth">
+        <button className="btn-text-elegant" onClick={onLogin}>Ingresar</button>
+        <button className="btn-solid-elegant" onClick={onLogin}>Pedir Servicio</button>
       </div>
     </header>
   )

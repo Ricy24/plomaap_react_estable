@@ -1,0 +1,428 @@
+/* ===== ESTILOS DE AUTENTICACIÓN (SPLIT SCREEN) ===== */
+.auth-wrapper {
+  min-height: 100vh;
+  background-color: var(--e-bg-light);
+  display: flex;
+  flex-direction: column;
+  padding: 40px 5%;
+  overflow-y: auto; /* Permite hacer scroll si la pantalla es muy pequeña */
+}
+
+/* Este contenedor centra la tarjeta dinámicamente sin cortar la parte superior */
+.auth-layout {
+  margin: auto; 
+  width: 100%;
+  max-width: 1100px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Crea un espacio limpio entre el botón y la tarjeta */
+}
+
+.btn-back {
+  top: 30px;
+  left: 40px;
+  background: transparent;
+  border: none;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  color: var(--e-text-muted);
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.3s;
+  z-index: 10;
+}
+
+.btn-back:hover {
+  color: var(--e-primary);
+}
+
+.auth-container {
+  width: 100%;
+  min-height: 650px; /* Usamos min-height para que crezca si el contenido lo requiere */
+  background: var(--e-bg-white);
+  border-radius: 30px;
+  box-shadow: var(--shadow-elegant);
+  display: flex;
+  overflow: hidden;
+}
+
+
+/* --- LADO IZQUIERDO (FORMULARIO) --- */
+.auth-form-side {
+  flex: 1;
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow-y: auto;
+}
+
+.auth-form-content {
+  max-width: 400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.auth-header {
+  margin-bottom: 40px;
+}
+
+.auth-header .logo-box {
+  margin-bottom: 30px;
+  color: var(--e-primary);
+}
+
+.auth-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--e-text-dark);
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+
+.auth-subtitle {
+  color: var(--e-text-muted);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Campos del formulario */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--e-text-dark);
+  margin-bottom: 8px;
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  background: var(--e-bg-light);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 0 16px;
+  transition: all 0.3s;
+}
+
+.input-wrapper:focus-within {
+  background: var(--e-bg-white);
+  border-color: var(--e-accent);
+  box-shadow: 0 0 0 4px rgba(0, 150, 199, 0.1);
+}
+
+.input-wrapper i {
+  color: var(--e-primary);
+  font-size: 1.1rem;
+}
+
+.input-wrapper input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 16px 12px;
+  font-size: 1rem;
+  color: var(--e-text-dark);
+  outline: none;
+  font-family: inherit;
+}
+
+.forgot-pass {
+  display: block;
+  text-align: right;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--e-primary);
+  text-decoration: none;
+  margin-top: 8px;
+}
+
+.forgot-pass:hover {
+  text-decoration: underline;
+}
+
+.btn-auth-submit {
+  background: var(--e-primary);
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.3s;
+}
+
+.btn-auth-submit:hover {
+  background: var(--e-accent);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 119, 182, 0.2);
+}
+
+/* Redes Sociales y Divisor */
+.auth-divider {
+  text-align: center;
+  margin: 30px 0;
+  position: relative;
+}
+
+.auth-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--e-border);
+  z-index: 1;
+}
+
+.auth-divider span {
+  background: var(--e-bg-white);
+  padding: 0 16px;
+  color: var(--e-text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  position: relative;
+  z-index: 2;
+}
+
+.social-auth {
+  display: flex;
+  gap: 16px;
+}
+
+.btn-social {
+  flex: 1;
+  background: white;
+  border: 1px solid var(--e-border);
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--e-text-dark);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: background 0.3s;
+}
+
+.btn-social:hover {
+  background: var(--e-bg-light);
+}
+
+.auth-switch {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 0.95rem;
+  color: var(--e-text-muted);
+}
+
+.auth-switch button {
+  background: none;
+  border: none;
+  color: var(--e-primary);
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.auth-switch button:hover {
+  text-decoration: underline;
+}
+
+/* --- LADO DERECHO (VISUAL DE CONFIANZA) --- */
+.auth-visual-side {
+  flex: 1;
+  background-image: url('https://images.unsplash.com/photo-1584622781564-1d987f7333c1?q=80&w=800&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding: 60px;
+}
+
+.visual-overlay {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(to top, rgba(0, 119, 182, 0.9) 0%, rgba(0, 119, 182, 0.2) 100%);
+}
+
+.visual-content {
+  position: relative;
+  z-index: 10;
+  color: white;
+}
+
+.trust-badge {
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 24px;
+}
+
+.visual-content h3 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+
+.visual-content p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  line-height: 1.5;
+}
+
+/* Animaciones */
+.slide-down {
+  animation: slideDown 0.3s ease-out forwards;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); height: 0; }
+  to { opacity: 1; transform: translateY(0); height: auto; }
+}
+
+/* ===== MENSAJES DE ERROR Y LOADING ===== */
+.error-message {
+  background-color: #fee;
+  color: #c33;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border-left: 4px solid #c33;
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+  animation: slideDown 0.3s ease-out;
+}
+
+.btn-auth-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ===== CARGA DE IMAGEN ===== */
+.image-upload-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.image-preview-box {
+  width: 100%;
+  height: 200px;
+  border: 2px dashed var(--e-border);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--e-bg-light);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.image-preview-box:hover {
+  border-color: var(--e-primary);
+  background: rgba(0, 119, 182, 0.05);
+}
+
+.image-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--e-text-muted);
+  font-size: 2rem;
+}
+
+.image-placeholder p {
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.file-input {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--e-border);
+  border-radius: 8px;
+  font-family: inherit;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.file-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.uploading-text {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--e-primary);
+  margin: 0;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* ===== GOOGLE LOGIN ===== */
+.google-login-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.google-login-wrapper > div {
+  width: 100% !important;
+}
+
+.social-auth {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .auth-visual-side {
+    display: none; /* Ocultamos la imagen en móviles para dar espacio al form */
+  }
+  .auth-wrapper {
+    padding: 20px;
+  }
+  .btn-back {
+    top: 20px; left: 20px;
+  }
+}

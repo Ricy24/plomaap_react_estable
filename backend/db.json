@@ -1,0 +1,48 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Andrés Pérez",
+      "email": "andres@example.com",
+      "password": "123456",
+      "phone": "3001234567",
+      "address": "Calle 85 # 11-53, Chapinero, Bogotá",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+      "role": "user",
+      "createdAt": "2024-01-15"
+    },
+    {
+      "id": 2,
+      "name": "María García",
+      "email": "maria@example.com",
+      "password": "123456",
+      "phone": "3002345678",
+      "address": "Carrera 7 # 125-30, Usaquén, Bogotá",
+      "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
+      "role": "user",
+      "createdAt": "2024-02-20"
+    },
+    {
+      "id": 3,
+      "name": "Juan Técnico",
+      "email": "tecnico@example.com",
+      "password": "123456",
+      "phone": "3003456789",
+      "address": "Avenida Boyacá # 70-50, Barrios Unidos, Bogotá",
+      "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop",
+      "role": "technician",
+      "createdAt": "2024-01-10"
+    },
+    {
+      "id": 4,
+      "name": "Andres ricardo Duran corredor",
+      "email": "anriduco2019@gmail.com",
+      "password": "google_106922235540825756736",
+      "phone": "",
+      "address": "",
+      "avatar": "https://lh3.googleusercontent.com/a/ACg8ocKRIQEW6lsh2UMPNHLPWAZgwGJlOU2MV02pGwZY3u5HNsYGRd8nGw=s96-c",
+      "role": "user",
+      "createdAt": "2026-06-05"
+    }
+  ]
+}
