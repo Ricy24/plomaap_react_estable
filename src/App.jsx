@@ -1,112 +1,100 @@
-import { useState, useEffect } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { GoogleOAuthProvider } from '@react-oauth/google'
+import { AuthProvider, useAuth } from './context/AuthContext.jsx'
+import ProtectedRoute from './components/ProtectedRoute.jsx'
 import Home from './pages/Home.jsx'
 import LoginSelector from './pages/auth/LoginSelector.jsx'
 import ClientAuth from './pages/auth/ClientAuth.jsx'
 import TechnicianAuth from './pages/auth/TechnicianAuth.jsx'
+import AdminAuth from './pages/auth/AdminAuth.jsx'
 import ClientDashboard from './pages/client/ClientDashboard.jsx'
 import TechnicianDashboard from './pages/technician/TechnicianDashboard.jsx'
+import AdminDashboard from './pages/admin/AdminDashboard.jsx'
 import './styles/theme-global.css'
 
-function AppContent() {
-  const [currentPage, setCurrentPage] = useState('Inicio')
-  const [user, setUser] = useState(null)
-  const [technicianProfile, setTechnicianProfile] = useState(null)
-
-  useEffect(() => {
-    const savedUser = localStorage.getItem('user')
-    if (savedUser) {
-      try {
-        const parsed = JSON.parse(savedUser)
-        setUser(parsed)
-        if (parsed.role === 'technician') {
-          const profile = localStorage.getItem('technicianProfile')
-          if (profile) setTechnicianProfile(JSON.parse(profile))
-          setCurrentPage('TechnicianDashboard')
-        } else {
-          setCurrentPage('ClientDashboard')
-        }
-      } catch (err) {
-        console.error('Error al cargar sesión:', err)
-      }
-    }
-  }, [])
-
-  const handleLogout = () => {
-    localStorage.removeItem('authToken')
-    localStorage.removeItem('user')
-    localStorage.removeItem('userRole')
-    localStorage.removeItem('technicianProfile')
-    localStorage.removeItem('selectedAddress')
-    setUser(null)
-    setTechnicianProfile(null)
-    setCurrentPage('Inicio')
+function GuestOnly({ children, role }) {
+  const { user, ready, dashboardPath } = useAuth()
+  if (!ready) return null
+  if (user && (!role || user.role === role)) {
+    return <Navigate to={dashboardPath} replace />
   }
+  return children
+}
 
-  if (currentPage === 'Inicio') {
-    return (
-      <Home
-        onLogin={() => setCurrentPage('LoginSelector')}
-        onTechnicianLogin={() => setCurrentPage('TechnicianAuth')}
-      />
-    )
-  }
+function AppRoutes() {
+  const { user, technicianProfile, logout, updateUser } = useAuth()
 
-  if (currentPage === 'LoginSelector') {
-    return (
-      <LoginSelector
-        onBack={() => setCurrentPage('Inicio')}
-        onSelectClient={() => setCurrentPage('ClientAuth')}
-        onSelectTechnician={() => setCurrentPage('TechnicianAuth')}
-      />
-    )
-  }
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
 
-  if (currentPage === 'ClientAuth') {
-    return (
-      <ClientAuth
-        onBack={() => setCurrentPage('LoginSelector')}
-        onLoginSuccess={(userData) => {
-          setUser(userData)
-          setCurrentPage('ClientDashboard')
-        }}
-      />
-    )
-  }
+      <Route path="/ingresar" element={
+        <GuestOnly>
+          <LoginSelector />
+        </GuestOnly>
+      } />
+      <Route path="/ingresar/cliente" element={
+        <GuestOnly role="user">
+          <ClientAuth />
+        </GuestOnly>
+      } />
+      <Route path="/ingresar/tecnico" element={
+        <GuestOnly role="technician">
+          <TechnicianAuth />
+        </GuestOnly>
+      } />
 
-  if (currentPage === 'TechnicianAuth') {
-    return (
-      <TechnicianAuth
-        onBack={() => setCurrentPage('LoginSelector')}
-        onLoginSuccess={(userData, profile) => {
-          setUser(userData)
-          setTechnicianProfile(profile)
-          setCurrentPage('TechnicianDashboard')
-        }}
-      />
-    )
-  }
+      <Route path="/admin" element={
+        <GuestOnly role="admin">
+          <AdminAuth />
+        </GuestOnly>
+      } />
 
-  if (currentPage === 'ClientDashboard' && user) {
-    return <ClientDashboard user={user} onLogout={handleLogout} />
-  }
+      <Route path="/cliente" element={
+        <ProtectedRoute allowedRoles={['user']}>
+          <ClientDashboard
+            user={user}
+            onLogout={logout}
+            onUserUpdate={(updated) => updateUser(updated)}
+          />
+        </ProtectedRoute>
+      } />
 
-  if (currentPage === 'TechnicianDashboard' && user) {
-    return (
-      <TechnicianDashboard
-        user={user}
-        technicianProfile={technicianProfile}
-        onLogout={handleLogout}
-      />
-    )
-  }
+      <Route path="/tecnico" element={
+        <ProtectedRoute allowedRoles={['technician']}>
+          <TechnicianDashboard
+            user={user}
+            technicianProfile={technicianProfile}
+            onLogout={logout}
+            onUserUpdate={(updated, profile) => updateUser(updated, profile)}
+          />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/admin/panel" element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <AdminDashboard
+            user={user}
+            onLogout={logout}
+            onUserUpdate={(updated) => updateUser(updated)}
+          />
+        </ProtectedRoute>
+      } />
+
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  )
 }
 
 function App() {
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
   return (
     <GoogleOAuthProvider clientId={googleClientId}>
-      <AppContent />
+      <BrowserRouter>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </BrowserRouter>
     </GoogleOAuthProvider>
   )
 }

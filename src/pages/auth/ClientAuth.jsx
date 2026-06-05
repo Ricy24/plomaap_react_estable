@@ -1,49 +1,63 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { GoogleLogin } from '@react-oauth/google'
 import { authApi } from '../../services/api'
+import { useAuth } from '../../context/AuthContext'
+import { uploadImageToCloudinary } from '../../utils/cloudinary'
+import {
+  validateLogin,
+  validateRegister,
+  normalizePhone,
+  MESSAGES
+} from '../../utils/validation'
+import ForgotPassword from './ForgotPassword'
 import '../../styles/auth.css'
 
-function ClientAuth({ onBack, onLoginSuccess }) {
+const EMPTY_FORM = {
+  name: '', email: '', password: '', confirmPassword: '',
+  phone: '', address: localStorage.getItem('selectedAddress') || '', avatar: null
+}
+
+function ClientAuth() {
+  const navigate = useNavigate()
+  const { login } = useAuth()
   const [isLogin, setIsLogin] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+  const [fieldErrors, setFieldErrors] = useState({})
+  const [showForgot, setShowForgot] = useState(false)
   const [imagePreview, setImagePreview] = useState(null)
   const [uploadingImage, setUploadingImage] = useState(false)
-  const [formData, setFormData] = useState({
-    name: '', email: '', password: '', phone: '',
-    address: localStorage.getItem('selectedAddress') || '', avatar: null
-  })
+  const [formData, setFormData] = useState({ ...EMPTY_FORM })
 
   const saveSession = (data) => {
     localStorage.setItem('authToken', data.token)
-    localStorage.setItem('user', JSON.stringify(data.user))
-    localStorage.setItem('userRole', 'user')
-    onLoginSuccess(data.user)
+    login(data.user)
+  }
+
+  const clearFieldError = (name) => {
+    setFieldErrors(prev => {
+      const next = { ...prev }
+      delete next[name]
+      return next
+    })
+    setError('')
   }
 
   const handleInputChange = (e) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
-    setError('')
+    clearFieldError(e.target.name)
+    setSuccess('')
   }
 
   const uploadToCloudinary = async (file) => {
     setUploadingImage(true)
     try {
-      const fd = new FormData()
-      fd.append('file', file)
-      fd.append('upload_preset', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET)
-      const res = await fetch(
-        `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
-        { method: 'POST', body: fd }
-      )
-      const data = await res.json()
-      if (data.secure_url) {
-        setFormData(prev => ({ ...prev, avatar: data.secure_url }))
-      } else {
-        setError(data.error?.message || 'Error al subir la imagen')
-      }
-    } catch {
-      setError('Error al conectar con Cloudinary')
+      const url = await uploadImageToCloudinary(file)
+      setFormData(prev => ({ ...prev, avatar: url }))
+    } catch (err) {
+      setError(err.message || 'Error al conectar con Cloudinary')
     } finally {
       setUploadingImage(false)
     }
@@ -58,19 +72,65 @@ function ClientAuth({ onBack, onLoginSuccess }) {
     await uploadToCloudinary(file)
   }
 
+  const switchMode = (login) => {
+    setIsLogin(login)
+    setError('')
+    setSuccess('')
+    setFieldErrors({})
+    setImagePreview(null)
+    if (login) {
+      setFormData(prev => ({
+        ...EMPTY_FORM,
+        email: prev.email,
+        address: prev.address
+      }))
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setLoading(true)
     setError('')
-    try {
-      let data
-      if (isLogin) {
-        data = await authApi.login(formData.email, formData.password, 'user')
-      } else {
-        data = await authApi.register(formData)
+    setSuccess('')
+
+    if (isLogin) {
+      const errors = validateLogin(formData)
+      if (Object.keys(errors).length > 0) {
+        setFieldErrors(errors)
+        return
       }
-      if (!data.success) { setError(data.message); return }
-      saveSession(data)
+    } else {
+      const errors = validateRegister(formData)
+      if (Object.keys(errors).length > 0) {
+        setFieldErrors(errors)
+        return
+      }
+    }
+
+    setLoading(true)
+    try {
+      if (isLogin) {
+        const data = await authApi.login(formData.email.trim(), formData.password, 'user')
+        if (!data.success) { setError(data.message); return }
+        saveSession(data)
+      } else {
+        const data = await authApi.register({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          password: formData.password,
+          confirmPassword: formData.confirmPassword,
+          phone: normalizePhone(formData.phone),
+          address: formData.address.trim(),
+          avatar: formData.avatar
+        })
+        if (!data.success) { setError(data.message); return }
+        setSuccess(data.message || MESSAGES.registerSuccess)
+        switchMode(true)
+        setFormData(prev => ({
+          ...EMPTY_FORM,
+          email: formData.email.trim(),
+          address: formData.address.trim()
+        }))
+      }
     } catch (err) {
       setError(err.message || 'Error de conexión. ¿Está el backend en puerto 5000?')
     } finally {
@@ -81,6 +141,7 @@ function ClientAuth({ onBack, onLoginSuccess }) {
   const handleGoogleLogin = async (credentialResponse) => {
     setLoading(true)
     setError('')
+    setFieldErrors({})
     try {
       const base64 = credentialResponse.credential.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
       const googleUser = JSON.parse(decodeURIComponent(
@@ -95,11 +156,20 @@ function ClientAuth({ onBack, onLoginSuccess }) {
 
       if (!data.success) {
         data = await authApi.register({
-          name: googleUser.name, email: googleUser.email,
-          password: 'google_' + googleUser.sub, phone: '',
-          address: localStorage.getItem('selectedAddress') || '',
+          name: googleUser.name,
+          email: googleUser.email,
+          password: 'google_' + googleUser.sub,
+          phone: '',
+          address: localStorage.getItem('selectedAddress') || 'Bogotá',
           avatar: googleUser.picture
         })
+        if (data.success && data.token) {
+          saveSession(data)
+          return
+        }
+        if (data.success) {
+          data = await authApi.login(googleUser.email, 'google_' + googleUser.sub, 'user')
+        }
       }
 
       if (!data.success) { setError(data.message); return }
@@ -113,8 +183,10 @@ function ClientAuth({ onBack, onLoginSuccess }) {
 
   return (
     <div className="auth-wrapper view-transition">
+      {showForgot && <ForgotPassword onClose={() => setShowForgot(false)} />}
+
       <div className="auth-layout">
-        <button className="btn-back" onClick={onBack}>
+        <button className="btn-back" onClick={() => navigate('/ingresar')}>
           <i className="fa-solid fa-arrow-left" /> Volver
         </button>
 
@@ -126,50 +198,80 @@ function ClientAuth({ onBack, onLoginSuccess }) {
                 <span className="auth-role-badge client">Acceso Cliente</span>
                 <h2 className="auth-title">{isLogin ? 'Bienvenido de nuevo' : 'Crea tu cuenta'}</h2>
                 <p className="auth-subtitle">
-                  {isLogin ? 'Ingresa para agendar reparaciones en tu hogar.' : 'Únete a la red de mantenimiento más confiable de Bogotá.'}
+                  {isLogin
+                    ? 'Ingresa para agendar reparaciones en tu hogar.'
+                    : 'Completa todos los campos para registrarte como cliente.'}
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="auth-form">
+              <form onSubmit={handleSubmit} className="auth-form" noValidate>
                 {!isLogin && (
                   <div className="input-group slide-down">
                     <label>Nombre completo</label>
-                    <div className="input-wrapper">
+                    <div className={`input-wrapper ${fieldErrors.name ? 'has-error' : ''}`}>
                       <i className="fa-regular fa-user" />
-                      <input type="text" name="name" placeholder="Ej. Andrés Pérez" value={formData.name} onChange={handleInputChange} required />
+                      <input type="text" name="name" placeholder="Ej. Juan Pérez"
+                        value={formData.name} onChange={handleInputChange} />
                     </div>
+                    {fieldErrors.name && <p className="field-error">{fieldErrors.name}</p>}
                   </div>
                 )}
+
                 <div className="input-group">
                   <label>Correo electrónico</label>
-                  <div className="input-wrapper">
+                  <div className={`input-wrapper ${fieldErrors.email ? 'has-error' : ''}`}>
                     <i className="fa-regular fa-envelope" />
-                    <input type="email" name="email" placeholder="tu@correo.com" value={formData.email} onChange={handleInputChange} required />
+                    <input type="email" name="email" placeholder="cliente@mail.com"
+                      value={formData.email} onChange={handleInputChange} />
                   </div>
+                  {fieldErrors.email && <p className="field-error">{fieldErrors.email}</p>}
                 </div>
+
                 <div className="input-group">
                   <label>Contraseña</label>
-                  <div className="input-wrapper">
+                  <div className={`input-wrapper ${fieldErrors.password ? 'has-error' : ''}`}>
                     <i className="fa-solid fa-lock" />
-                    <input type="password" name="password" placeholder="••••••••" value={formData.password} onChange={handleInputChange} required />
+                    <input type="password" name="password" placeholder="Mín. 8 caracteres"
+                      value={formData.password} onChange={handleInputChange} />
                   </div>
+                  {fieldErrors.password && <p className="field-error">{fieldErrors.password}</p>}
+                  {!isLogin && !fieldErrors.password && (
+                    <p className="field-hint">Mayúscula, minúscula, número y carácter especial (ej. T3cnic0_2026)</p>
+                  )}
                 </div>
+
                 {!isLogin && (
                   <>
                     <div className="input-group">
-                      <label>Teléfono (opcional)</label>
-                      <div className="input-wrapper">
-                        <i className="fa-solid fa-phone" />
-                        <input type="tel" name="phone" placeholder="3001234567" value={formData.phone} onChange={handleInputChange} />
+                      <label>Confirmar contraseña</label>
+                      <div className={`input-wrapper ${fieldErrors.confirmPassword ? 'has-error' : ''}`}>
+                        <i className="fa-solid fa-lock" />
+                        <input type="password" name="confirmPassword" placeholder="Repita su contraseña"
+                          value={formData.confirmPassword} onChange={handleInputChange} />
                       </div>
+                      {fieldErrors.confirmPassword && <p className="field-error">{fieldErrors.confirmPassword}</p>}
                     </div>
+
                     <div className="input-group">
-                      <label>Dirección</label>
-                      <div className="input-wrapper">
-                        <i className="fa-solid fa-location-dot" />
-                        <input type="text" name="address" placeholder="Ej. Calle 85 # 11-53..." value={formData.address} onChange={handleInputChange} required />
+                      <label>Teléfono de contacto</label>
+                      <div className={`input-wrapper ${fieldErrors.phone ? 'has-error' : ''}`}>
+                        <i className="fa-solid fa-phone" />
+                        <input type="tel" name="phone" placeholder="3229874810"
+                          value={formData.phone} onChange={handleInputChange} />
                       </div>
+                      {fieldErrors.phone && <p className="field-error">{fieldErrors.phone}</p>}
                     </div>
+
+                    <div className="input-group">
+                      <label>Dirección de residencia</label>
+                      <div className={`input-wrapper ${fieldErrors.address ? 'has-error' : ''}`}>
+                        <i className="fa-solid fa-location-dot" />
+                        <input type="text" name="address" placeholder="Cra 77A #45d sur..."
+                          value={formData.address} onChange={handleInputChange} />
+                      </div>
+                      {fieldErrors.address && <p className="field-error">{fieldErrors.address}</p>}
+                    </div>
+
                     <div className="input-group">
                       <label>Foto de perfil (opcional)</label>
                       <div className="image-upload-wrapper">
@@ -185,27 +287,45 @@ function ClientAuth({ onBack, onLoginSuccess }) {
                     </div>
                   </>
                 )}
+
+                {isLogin && (
+                  <button type="button" className="forgot-pass-btn" onClick={() => setShowForgot(true)}>
+                    ¿Olvidaste tu contraseña?
+                  </button>
+                )}
+
                 {error && <div className="error-message">{error}</div>}
+                {success && <div className="success-message">{success}</div>}
+
                 <button type="submit" className="btn-auth-submit" disabled={loading}>
-                  {loading ? 'Procesando...' : (isLogin ? 'Ingresar a mi cuenta' : 'Registrarme')}
+                  {loading ? 'Procesando...' : (isLogin ? 'Iniciar sesión' : 'Registrarse')}
                 </button>
               </form>
 
-              <div className="auth-divider"><span>O continúa con</span></div>
-              <div className="social-auth">
-                <GoogleLogin
-                  onSuccess={handleGoogleLogin}
-                  onError={() => setError('Error con Google Login')}
-                  theme="outline" size="large" text="continue_with"
-                />
-              </div>
+              {isLogin && (
+                <>
+                  <div className="auth-divider"><span>O continúa con</span></div>
+                  <div className="social-auth">
+                    <GoogleLogin
+                      onSuccess={handleGoogleLogin}
+                      onError={() => setError('Error con Google Login')}
+                      theme="outline" size="large" text="continue_with"
+                    />
+                  </div>
+                </>
+              )}
 
               <p className="auth-switch">
                 {isLogin ? '¿No tienes cuenta? ' : '¿Ya tienes cuenta? '}
-                <button onClick={() => { setIsLogin(!isLogin); setError(''); setImagePreview(null) }}>
+                <button type="button" onClick={() => switchMode(!isLogin)}>
                   {isLogin ? 'Regístrate' : 'Ingresa'}
                 </button>
               </p>
+
+              <div className="tech-demo-hint">
+                <p><i className="fa-solid fa-circle-info" /> Casos de prueba (CP06):</p>
+                <p>cliente@mail.com · Contraseña: <strong>Cl@ve123*</strong></p>
+              </div>
             </div>
           </div>
 

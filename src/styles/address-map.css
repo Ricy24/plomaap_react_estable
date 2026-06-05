@@ -1,0 +1,525 @@
+/* Address Map Component Styles */
+
+.address-map-container {
+  width: 100%;
+  margin: 20px 0;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #007bff;
+}
+
+/* Address Input Wrapper */
+.address-input-wrapper {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.address-input-field {
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  padding: 0 12px;
+  transition: all 0.3s ease;
+}
+
+.address-input-field:focus-within {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.address-input-field i:first-child {
+  color: #007bff;
+  margin-right: 10px;
+  font-size: 16px;
+}
+
+.address-search-input {
+  flex: 1;
+  border: none;
+  padding: 12px 10px;
+  font-size: 15px;
+  outline: none;
+  background: transparent;
+  color: #333;
+}
+
+.address-search-input::placeholder {
+  color: #adb5bd;
+}
+
+.loading-icon {
+  color: #007bff;
+  margin-left: 10px;
+  font-size: 16px;
+}
+
+/* Suggestions List */
+.suggestions-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #e9ecef;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.suggestion-item {
+  width: 100%;
+  padding: 12px 15px;
+  text-align: left;
+  background: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background 0.2s ease;
+  font-size: 14px;
+  color: #333;
+}
+
+.suggestion-item:first-child {
+  border-top: none;
+}
+
+.suggestion-item:hover {
+  background: #f8f9fa;
+}
+
+.suggestion-item i {
+  color: #7cb342;
+  flex-shrink: 0;
+}
+
+.suggestion-item span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Error Message */
+.map-error {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 12px 16px;
+  border-radius: 6px;
+  border: 1px solid #f5c6cb;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.map-error i {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+/* Loading State */
+.map-loading {
+  background-color: #d1ecf1;
+  color: #0c5460;
+  padding: 20px;
+  border-radius: 6px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid #bee5eb;
+  font-size: 15px;
+}
+
+.map-loading i {
+  font-size: 18px;
+}
+
+/* Map Wrapper */
+.map-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.map-wrapper iframe {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+  border-radius: 8px;
+}
+
+.map-wrapper iframe:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Map Info */
+.map-info {
+  background: white;
+  padding: 15px;
+  border-radius: 6px;
+  border-left: 3px solid #28a745;
+}
+
+.map-info p {
+  margin: 8px 0;
+  color: #333;
+  font-size: 14px;
+}
+
+.map-info p:first-child {
+  margin-top: 0;
+}
+
+.map-info strong {
+  color: #007bff;
+}
+
+.map-address {
+  font-weight: 500;
+  color: #333;
+  margin: 10px 0;
+}
+
+.map-coords {
+  font-size: 13px;
+  color: #666;
+  font-family: 'Courier New', monospace;
+  background: #f1f3f5;
+  padding: 8px 10px;
+  border-radius: 4px;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.map-coords i {
+  color: #007bff;
+  font-size: 14px;
+}
+
+/* Placeholder */
+.map-placeholder {
+  text-align: center;
+  padding: 50px 20px;
+  color: #6c757d;
+}
+
+.map-placeholder i {
+  font-size: 48px;
+  color: #dee2e6;
+  margin-bottom: 15px;
+  display: block;
+}
+
+.map-placeholder p {
+  margin: 0;
+  font-size: 16px;
+}
+
+/* Scrollbar for suggestions */
+.suggestions-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.suggestions-list::-webkit-scrollbar-track {
+  background: #f1f3f5;
+  border-radius: 3px;
+}
+
+.suggestions-list::-webkit-scrollbar-thumb {
+  background: #adb5bd;
+  border-radius: 3px;
+}
+
+.suggestions-list::-webkit-scrollbar-thumb:hover {
+  background: #868e96;
+}
+
+/* Responsive - Tablet */
+@media (max-width: 768px) {
+  .address-map-container {
+    padding: 12px;
+    margin: 15px 0;
+    border-radius: 6px;
+  }
+
+  .address-search-input {
+    padding: 10px 8px;
+    font-size: 14px;
+  }
+
+  .address-input-field {
+    padding: 0 10px;
+  }
+
+  .address-input-field i:first-child {
+    font-size: 14px;
+    margin-right: 8px;
+  }
+
+  .map-wrapper iframe {
+    height: 280px !important;
+  }
+
+  .map-info {
+    padding: 12px;
+  }
+
+  .map-info p {
+    font-size: 13px;
+  }
+
+  .map-coords {
+    font-size: 12px;
+    padding: 6px 8px;
+  }
+
+  .map-placeholder {
+    padding: 40px 15px;
+  }
+
+  .map-placeholder i {
+    font-size: 40px;
+    margin-bottom: 10px;
+  }
+
+  .map-placeholder p {
+    font-size: 14px;
+  }
+
+  .suggestion-item {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .map-error {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .map-loading {
+    padding: 15px;
+    font-size: 13px;
+  }
+}
+
+/* Responsive - Mobile */
+@media (max-width: 480px) {
+  .address-map-container {
+    padding: 10px;
+    margin: 10px 0;
+    border-left-width: 3px;
+  }
+
+  .address-search-input {
+    padding: 8px 6px;
+    font-size: 13px;
+  }
+
+  .address-input-field {
+    padding: 0 8px;
+  }
+
+  .address-input-field i:first-child {
+    font-size: 12px;
+    margin-right: 6px;
+  }
+
+  .map-wrapper iframe {
+    height: 220px !important;
+  }
+
+  .map-info {
+    padding: 10px;
+  }
+
+  .map-info p {
+    font-size: 12px;
+    margin: 6px 0;
+  }
+
+  .map-coords {
+    font-size: 11px;
+    padding: 5px 6px;
+    margin-top: 6px;
+  }
+
+  .map-placeholder {
+    padding: 30px 10px;
+  }
+
+  .map-placeholder i {
+    font-size: 32px;
+    margin-bottom: 8px;
+  }
+
+  .map-placeholder p {
+    font-size: 13px;
+  }
+
+  .suggestion-item {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .suggestions-list {
+    max-height: 250px;
+  }
+
+  .map-error {
+    padding: 8px 10px;
+    font-size: 12px;
+    gap: 8px;
+  }
+
+  .map-loading {
+    padding: 12px;
+    font-size: 12px;
+    gap: 8px;
+  }
+}
+
+/* Appointment Map Modal */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-map-content {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 20px;
+  color: #333;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #6c757d;
+  transition: color 0.2s ease;
+}
+
+.modal-close:hover {
+  color: #333;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.appointment-info {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.appointment-info p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.appointment-info strong {
+  color: #007bff;
+}
+
+.btn-map-view {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s ease;
+}
+
+.btn-map-view:hover {
+  background: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .modal-overlay {
+    padding: 10px;
+  }
+
+  .modal-map-content {
+    max-height: 95vh;
+  }
+
+  .modal-header {
+    padding: 15px;
+  }
+
+  .modal-header h2 {
+    font-size: 18px;
+  }
+
+  .modal-body {
+    padding: 15px;
+  }
+}

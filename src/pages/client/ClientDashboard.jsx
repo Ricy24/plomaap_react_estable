@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react'
-import { appointmentsApi, servicesApi, techniciansApi, formatPrice, getInitials } from '../../services/api'
+import { appointmentsApi, servicesApi, techniciansApi, authApi, formatPrice, getInitials } from '../../services/api'
+import ProfileEditForm from '../../components/profile/ProfileEditForm'
+import AddressMap from '../../components/AddressMap'
 import '../../styles/dashboard.css'
+import '../../styles/profile-edit.css'
+import '../../styles/address-map.css'
 
-function ClientDashboard({ user, onLogout }) {
+function ClientDashboard({ user, onLogout, onUserUpdate }) {
   const [activeTab, setActiveTab] = useState('inicio')
   const [services, setServices] = useState([])
   const [appointments, setAppointments] = useState([])
@@ -14,8 +18,16 @@ function ClientDashboard({ user, onLogout }) {
   const [booking, setBooking] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [savingProfile, setSavingProfile] = useState(false)
+  const [selectedAddress, setSelectedAddress] = useState(user?.address || localStorage.getItem('selectedAddress') || 'Calle 85 # 11-53, Chapinero, Bogotá')
+  const [selectedLocation, setSelectedLocation] = useState(null)
+  const [availableTechnicians, setAvailableTechnicians] = useState([])
+  const [selectedTechnician, setSelectedTechnician] = useState(null)
+  const [showTechnicianModal, setShowTechnicianModal] = useState(false)
+  const [rescheduleMode, setRescheduleMode] = useState(null)
+  const [selectedAppointment, setSelectedAppointment] = useState(null)
 
-  const userAddress = user?.address || localStorage.getItem('selectedAddress') || 'Calle 85 # 11-53, Chapinero, Bogotá'
+  const userAddress = selectedAddress
   const firstName = user?.name?.split(' ')[0] || 'Usuario'
   const upcoming = appointments.filter(a => a.status === 'scheduled' || a.status === 'in_progress')
   const completed = appointments.filter(a => a.status === 'completed')
@@ -27,7 +39,14 @@ function ClientDashboard({ user, onLogout }) {
       techniciansApi.getSlots(selectedDate, selectedService.id)
         .then(data => setAvailableSlots(data.slots || []))
         .catch(() => setAvailableSlots([]))
+      
+      techniciansApi.getMyAppointments = appointmentsApi.getTechnicianOptions
+      appointmentsApi.getTechnicianOptions(selectedDate, selectedService.id)
+        .then(data => setAvailableTechnicians(data.technicians || []))
+        .catch(() => setAvailableTechnicians([]))
+      
       setSelectedTime(null)
+      setSelectedTechnician(null)
     }
   }, [selectedService, selectedDate])
 
@@ -47,24 +66,83 @@ function ClientDashboard({ user, onLogout }) {
     }
   }
 
+  const handleSaveProfile = async (payload) => {
+    setSavingProfile(true)
+    try {
+      const data = await authApi.updateProfile(payload)
+      onUserUpdate?.(data.user)
+    } catch (err) {
+      setSavingProfile(false)
+      throw err
+    }
+    setSavingProfile(false)
+  }
+
   const handleConfirmBooking = async () => {
     if (!selectedService || !selectedDate || !selectedTime) return
     setBooking(true)
     setError('')
     setSuccess('')
     try {
-      const data = await appointmentsApi.create({
+      const payload = {
         serviceId: selectedService.id,
         date: selectedDate,
         time: selectedTime,
         address: userAddress
-      })
+      }
+      if (selectedTechnician) {
+        payload.technicianId = selectedTechnician.id
+      }
+      const data = await appointmentsApi.create(payload)
       setAppointments(prev => [data.appointment, ...prev])
       setSuccess(`¡Cita confirmada! Tu técnico será ${data.appointment.technicianName}.`)
       setSelectedService(null)
       setSelectedDate('')
       setSelectedTime(null)
+      setSelectedTechnician(null)
       setActiveTab('citas')
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setBooking(false)
+    }
+  }
+
+  const handleCancelAppointment = async (appointmentId) => {
+    if (!window.confirm('¿Estás seguro de que deseas cancelar esta cita?')) return
+    
+    setError('')
+    setSuccess('')
+    try {
+      await appointmentsApi.cancel(appointmentId)
+      setAppointments(prev => prev.map(a => 
+        a.id === appointmentId ? { ...a, status: 'cancelled' } : a
+      ))
+      setSuccess('Cita cancelada exitosamente')
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
+  const handleRescheduleAppointment = (appointment) => {
+    setSelectedAppointment(appointment)
+    setRescheduleMode(appointment.id)
+    setSelectedDate(appointment.date)
+    setSelectedTime(appointment.time)
+  }
+
+  const handleConfirmReschedule = async () => {
+    if (!selectedAppointment || !selectedDate || !selectedTime) return
+    
+    setBooking(true)
+    setError('')
+    setSuccess('')
+    try {
+      const data = await appointmentsApi.reschedule(selectedAppointment.id, selectedDate, selectedTime)
+      setAppointments(prev => prev.map(a => a.id === selectedAppointment.id ? data.appointment : a))
+      setSuccess('Cita reprogramada exitosamente')
+      setRescheduleMode(null)
+      setSelectedAppointment(null)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -227,32 +305,74 @@ function ClientDashboard({ user, onLogout }) {
               <section className="dash-schedule-panel">
                 <h3>Programar visita — {selectedService.name}</h3>
                 {error && <div className="dash-alert error inline"><i className="fa-solid fa-circle-exclamation" /> {error}</div>}
+                
+                <div className="dash-location-section">
+                  <h4 className="dash-section-subtitle">
+                    <i className="fa-solid fa-location-dot"></i> Tu ubicación de servicio
+                  </h4>
+                  <AddressMap 
+                    address={userAddress} 
+                    editable={true}
+                    onLocationChange={(coords) => {
+                      setSelectedLocation(coords)
+                      console.log('Ubicación confirmada:', coords)
+                    }}
+                    onAddressChange={(newAddress) => {
+                      setSelectedAddress(newAddress)
+                    }}
+                  />
+                </div>
+
                 <div className="dash-schedule-grid">
                   <div className="dash-schedule-field">
                     <label><i className="fa-regular fa-calendar" /> Fecha</label>
                     <input type="date" value={selectedDate} min={new Date().toISOString().split('T')[0]}
                       onChange={e => setSelectedDate(e.target.value)} />
                   </div>
-                  <div className="dash-schedule-field">
-                    <label><i className="fa-solid fa-location-dot" /> Dirección</label>
-                    <input type="text" value={userAddress} readOnly className="readonly" />
-                  </div>
                 </div>
+
                 {selectedDate && (
-                  <div className="dash-time-slots">
-                    <label><i className="fa-regular fa-clock" /> Horarios disponibles</label>
-                    {availableSlots.length === 0
-                      ? <p className="dash-empty-text">No hay horarios disponibles este día. Prueba otra fecha.</p>
-                      : (
-                        <div className="dash-slots-row">
-                          {availableSlots.map(slot => (
-                            <button key={slot} className={`dash-slot ${selectedTime === slot ? 'selected' : ''}`}
-                              onClick={() => setSelectedTime(slot)}>{slot}</button>
+                  <>
+                    <div className="dash-time-slots">
+                      <label><i className="fa-regular fa-clock" /> Horarios disponibles</label>
+                      {availableSlots.length === 0
+                        ? <p className="dash-empty-text">No hay horarios disponibles este día. Prueba otra fecha.</p>
+                        : (
+                          <div className="dash-slots-row">
+                            {availableSlots.map(slot => (
+                              <button key={slot} className={`dash-slot ${selectedTime === slot ? 'selected' : ''}`}
+                                onClick={() => setSelectedTime(slot)}>{slot}</button>
+                            ))}
+                          </div>
+                        )
+                      }
+                    </div>
+
+                    {selectedTime && availableTechnicians.length > 0 && (
+                      <div className="dash-technician-selection">
+                        <label><i className="fa-solid fa-user-gear" /> Selecciona tu técnico (opcional)</label>
+                        <p className="dash-section-sub">Elige el técnico que prefieras o uno será asignado automáticamente</p>
+                        <div className="dash-technicians-grid">
+                          {availableTechnicians.map(tech => (
+                            <button 
+                              key={tech.id}
+                              className={`dash-technician-card ${selectedTechnician?.id === tech.id ? 'selected' : ''}`}
+                              onClick={() => setSelectedTechnician(tech)}
+                            >
+                              <div className="tech-avatar">
+                                {tech.avatar ? <img src={tech.avatar} alt={tech.name} /> : <i className="fa-solid fa-user"></i>}
+                              </div>
+                              <h5>{tech.name}</h5>
+                              <div className="tech-stats">
+                                <span><i className="fa-solid fa-star"></i> {tech.rating}</span>
+                                <span><i className="fa-solid fa-check"></i> {tech.completedJobs} trabajos</span>
+                              </div>
+                            </button>
                           ))}
                         </div>
-                      )
-                    }
-                  </div>
+                      </div>
+                    )}
+                  </>
                 )}
                 <button className="dash-btn-primary dash-btn-confirm"
                   disabled={!selectedDate || !selectedTime || booking}
@@ -277,7 +397,15 @@ function ClientDashboard({ user, onLogout }) {
                     <>
                       <h3 className="dash-subsection-title">Programadas</h3>
                       <div className="dash-appointments-grid">
-                        {upcoming.map(a => <AppointmentCard key={a.id} appointment={a} />)}
+                        {upcoming.map(a => (
+                          <AppointmentCard 
+                            key={a.id} 
+                            appointment={a}
+                            onCancel={handleCancelAppointment}
+                            onReschedule={handleRescheduleAppointment}
+                            isUpcoming={true}
+                          />
+                        ))}
                       </div>
                     </>
                   )}
@@ -297,15 +425,14 @@ function ClientDashboard({ user, onLogout }) {
 
         {activeTab === 'perfil' && (
           <div className="dash-profile-page">
-            <ProfileCard user={user} userAddress={userAddress} large />
-            <div className="dash-profile-details">
-              <h3>Información de contacto</h3>
-              <div className="dash-info-grid">
-                <InfoRow icon="fa-envelope" label="Correo" value={user?.email} />
-                <InfoRow icon="fa-phone" label="Teléfono" value={user?.phone || 'No registrado'} />
-                <InfoRow icon="fa-location-dot" label="Dirección" value={userAddress} />
-                <InfoRow icon="fa-calendar" label="Miembro desde" value={user?.createdAt || '—'} />
-              </div>
+            <div className="dash-profile-details full-width">
+              <ProfileEditForm
+                user={user}
+                role="user"
+                mode="self"
+                onSave={handleSaveProfile}
+                saving={savingProfile}
+              />
             </div>
           </div>
         )}
@@ -371,8 +498,10 @@ function ActivityItem({ appointment: a }) {
   )
 }
 
-function AppointmentCard({ appointment: a }) {
+function AppointmentCard({ appointment: a, onCancel, onReschedule, isUpcoming }) {
   const statusLabel = { scheduled: 'Programado', in_progress: 'En curso', completed: 'Completado', cancelled: 'Cancelado' }
+  const canModify = isUpcoming && (a.status === 'scheduled' || a.status === 'in_progress')
+  
   return (
     <div className={`dash-appt-card ${a.status}`}>
       <div className="dash-appt-header">
@@ -385,6 +514,25 @@ function AppointmentCard({ appointment: a }) {
         <span><i className="fa-solid fa-user-gear" /> {a.technicianName}</span>
       </div>
       <p className="dash-appt-address"><i className="fa-solid fa-location-dot" /> {a.address}</p>
+      
+      {canModify && (
+        <div className="dash-appt-actions">
+          <button 
+            className="dash-appt-btn reschedule"
+            onClick={() => onReschedule?.(a)}
+            title="Reprogramar cita"
+          >
+            <i className="fa-solid fa-calendar-days" /> Reprogramar
+          </button>
+          <button 
+            className="dash-appt-btn cancel"
+            onClick={() => onCancel?.(a.id)}
+            title="Cancelar cita"
+          >
+            <i className="fa-solid fa-times" /> Cancelar
+          </button>
+        </div>
+      )}
     </div>
   )
 }

@@ -403,6 +403,235 @@
   color: white;
 }
 
+/* ===== SECCIÓN DEMOSTRACIÓN DE MAPA ===== */
+.location-demo-section {
+  padding: 80px 5%;
+  background: linear-gradient(135deg, var(--e-bg-light), #E8F4F8);
+  border-top: 1px solid var(--e-border);
+  border-bottom: 1px solid var(--e-border);
+}
+
+.location-demo-section .section-header {
+  margin-bottom: 60px;
+  text-align: center;
+}
+
+.location-demo-section .section-subtitle {
+  color: var(--e-accent);
+  font-weight: 700;
+  letter-spacing: 1px;
+  display: inline-block;
+  margin-bottom: 12px;
+}
+
+.location-demo-section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 16px;
+  color: var(--e-text-dark);
+}
+
+.location-demo-section > .section-header > p {
+  font-size: 1.1rem;
+  color: var(--e-text-muted);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.demo-map-container {
+  max-width: 700px;
+  margin: 0 auto 60px;
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px -10px rgba(0, 119, 182, 0.15);
+}
+
+/* Sobrescribir estilos del mapa para que se vea mejor en home */
+.demo-map-container .address-map-container {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border-left: none;
+}
+
+.demo-benefits {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  margin-bottom: 50px;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.benefit-item {
+  text-align: center;
+  padding: 30px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px -3px rgba(0, 119, 182, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.benefit-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px -3px rgba(0, 119, 182, 0.15);
+}
+
+.benefit-item i {
+  font-size: 2.5rem;
+  color: var(--e-accent);
+  margin-bottom: 16px;
+  display: block;
+}
+
+.benefit-item h4 {
+  font-size: 1.2rem;
+  color: var(--e-text-dark);
+  margin-bottom: 10px;
+}
+
+.benefit-item p {
+  color: var(--e-text-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.demo-cta {
+  text-align: center;
+}
+
+.demo-cta p {
+  font-size: 1.2rem;
+  color: var(--e-text-dark);
+  margin-bottom: 24px;
+  font-weight: 500;
+}
+
+.btn-solid-primary {
+  background: linear-gradient(135deg, var(--e-primary), var(--e-accent));
+  color: white;
+  border: none;
+  padding: 16px 40px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 8px 20px -5px rgba(0, 119, 182, 0.3);
+}
+
+.btn-solid-primary:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 30px -5px rgba(0, 119, 182, 0.4);
+}
+
+/* ===== RESPONSIVE LOCATION DEMO ===== */
+@media (max-width: 1024px) {
+  .location-demo-section {
+    padding: 60px 5%;
+  }
+
+  .location-demo-section h2 {
+    font-size: 2rem;
+  }
+
+  .demo-benefits {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .location-demo-section {
+    padding: 50px 5%;
+  }
+
+  .location-demo-section .section-header {
+    margin-bottom: 40px;
+  }
+
+  .location-demo-section h2 {
+    font-size: 1.8rem;
+  }
+
+  .location-demo-section > .section-header > p {
+    font-size: 1rem;
+  }
+
+  .demo-map-container {
+    padding: 20px;
+    margin-bottom: 40px;
+  }
+
+  .demo-benefits {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .benefit-item {
+    padding: 20px;
+  }
+
+  .benefit-item i {
+    font-size: 2rem;
+  }
+
+  .demo-cta p {
+    font-size: 1.1rem;
+  }
+
+  .btn-solid-primary {
+    padding: 14px 32px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .location-demo-section {
+    padding: 40px 5%;
+  }
+
+  .location-demo-section h2 {
+    font-size: 1.5rem;
+  }
+
+  .location-demo-section > .section-header > p {
+    font-size: 0.95rem;
+  }
+
+  .demo-map-container {
+    padding: 15px;
+    margin-bottom: 30px;
+  }
+
+  .benefit-item {
+    padding: 15px;
+  }
+
+  .benefit-item h4 {
+    font-size: 1rem;
+  }
+
+  .benefit-item p {
+    font-size: 0.9rem;
+  }
+
+  .demo-cta p {
+    font-size: 1rem;
+  }
+
+  .btn-solid-primary {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 0.9rem;
+  }
+}
+
 .tech-box p {
   font-size: 1.2rem;
   opacity: 0.9;

@@ -1,10 +1,13 @@
+import { useNavigate } from 'react-router-dom'
 import '../../styles/login-selector.css'
 
-function LoginSelector({ onBack, onSelectClient, onSelectTechnician }) {
+function LoginSelector() {
+  const navigate = useNavigate()
+
   return (
     <div className="login-selector-wrapper">
       <div className="login-selector-layout">
-        <button className="btn-back" onClick={onBack}>
+        <button className="btn-back" onClick={() => navigate('/')}>
           <i className="fa-solid fa-arrow-left" /> Volver al inicio
         </button>
 
@@ -19,7 +22,7 @@ function LoginSelector({ onBack, onSelectClient, onSelectTechnician }) {
           </div>
 
           <div className="login-selector-cards">
-            <button className="login-type-card client" onClick={onSelectClient}>
+            <button className="login-type-card client" onClick={() => navigate('/ingresar/cliente')}>
               <div className="login-type-icon">
                 <i className="fa-solid fa-house-user" />
               </div>
@@ -28,7 +31,7 @@ function LoginSelector({ onBack, onSelectClient, onSelectTechnician }) {
               <span className="login-type-cta">Ingresar como cliente <i className="fa-solid fa-arrow-right" /></span>
             </button>
 
-            <button className="login-type-card technician" onClick={onSelectTechnician}>
+            <button className="login-type-card technician" onClick={() => navigate('/ingresar/tecnico')}>
               <div className="login-type-icon">
                 <i className="fa-solid fa-user-gear" />
               </div>
@@ -39,8 +42,8 @@ function LoginSelector({ onBack, onSelectClient, onSelectTechnician }) {
           </div>
 
           <div className="login-selector-hint">
-            <p><strong>Demo clientes:</strong> andres@example.com / 123456</p>
-            <p><strong>Demo técnicos:</strong> tecnico@example.com / 123456</p>
+            <p><strong>CP06 Cliente:</strong> cliente@mail.com / Cl@ve123*</p>
+            <p><strong>CP07 Técnico:</strong> tecnico@mail.com / T3cnic0_2026</p>
           </div>
         </div>
       </div>

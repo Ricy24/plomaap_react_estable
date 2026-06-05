@@ -1,16 +1,19 @@
 import { useState, useEffect } from 'react'
-import { appointmentsApi, getInitials } from '../../services/api'
+import { appointmentsApi, authApi, getInitials } from '../../services/api'
+import ProfileEditForm from '../../components/profile/ProfileEditForm'
 import '../../styles/dashboard.css'
 import '../../styles/technician-dashboard.css'
+import '../../styles/profile-edit.css'
 
 const DAY_NAMES = { mon: 'Lun', tue: 'Mar', wed: 'Mié', thu: 'Jue', fri: 'Vie', sat: 'Sáb', sun: 'Dom' }
 const STATUS_LABELS = { scheduled: 'Programada', in_progress: 'En curso', completed: 'Completada', cancelled: 'Cancelada' }
 
-function TechnicianDashboard({ user, technicianProfile, onLogout }) {
+function TechnicianDashboard({ user, technicianProfile, onLogout, onUserUpdate }) {
   const [activeTab, setActiveTab] = useState('inicio')
   const [appointments, setAppointments] = useState([])
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState(null)
+  const [savingProfile, setSavingProfile] = useState(false)
 
   const profile = technicianProfile || JSON.parse(localStorage.getItem('technicianProfile') || 'null')
   const firstName = user?.name?.split(' ')[0] || 'Técnico'
@@ -32,6 +35,18 @@ function TechnicianDashboard({ user, technicianProfile, onLogout }) {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleSaveProfile = async (payload) => {
+    setSavingProfile(true)
+    try {
+      const data = await authApi.updateProfile(payload)
+      onUserUpdate?.(data.user, data.technicianProfile)
+    } catch (err) {
+      setSavingProfile(false)
+      throw err
+    }
+    setSavingProfile(false)
   }
 
   const handleStatusChange = async (id, status) => {
@@ -257,28 +272,15 @@ function TechnicianDashboard({ user, technicianProfile, onLogout }) {
 
         {activeTab === 'perfil' && (
           <div className="dash-profile-page">
-            <div className="dash-profile-card large">
-              <div className="dash-profile-avatar lg">
-                {user?.avatar
-                  ? <img src={user.avatar} alt={user.name} />
-                  : <span className="dash-avatar-initials tech-initials lg">{getInitials(user?.name)}</span>
-                }
-              </div>
-              <h3>{user?.name}</h3>
-              <p className="dash-profile-email">{user?.email}</p>
-              <div className="tech-profile-stats">
-                <div><strong>{profile?.rating}</strong><span>Calificación</span></div>
-                <div><strong>{profile?.completedJobs}</strong><span>Trabajos</span></div>
-              </div>
-            </div>
-            <div className="dash-profile-details">
-              <h3>Información profesional</h3>
-              <div className="dash-info-grid">
-                <InfoRow icon="fa-phone" label="Teléfono" value={user?.phone || '—'} />
-                <InfoRow icon="fa-location-dot" label="Base" value={user?.address || '—'} />
-                <InfoRow icon="fa-wrench" label="Especialidades" value={profile?.specialties?.join(', ') || '—'} />
-                <InfoRow icon="fa-map" label="Zonas" value={profile?.zones?.join(', ') || '—'} />
-              </div>
+            <div className="dash-profile-details full-width">
+              <ProfileEditForm
+                user={user}
+                role="technician"
+                mode="self"
+                technicianProfile={profile}
+                onSave={handleSaveProfile}
+                saving={savingProfile}
+              />
             </div>
           </div>
         )}

@@ -6,7 +6,7 @@ import { validateLogin } from '../../utils/validation'
 import ForgotPassword from './ForgotPassword'
 import '../../styles/auth.css'
 
-function TechnicianAuth() {
+function AdminAuth() {
   const navigate = useNavigate()
   const { login } = useAuth()
   const [loading, setLoading] = useState(false)
@@ -27,11 +27,11 @@ function TechnicianAuth() {
 
     setLoading(true)
     try {
-      const data = await authApi.login(formData.email.trim(), formData.password, 'technician')
+      const data = await authApi.login(formData.email.trim(), formData.password, 'admin')
       if (!data.success) { setError(data.message); return }
 
       localStorage.setItem('authToken', data.token)
-      login(data.user, data.technicianProfile)
+      login(data.user)
     } catch (err) {
       setError(err.message || 'Error de conexión. ¿Está el backend en puerto 5000?')
     } finally {
@@ -44,8 +44,8 @@ function TechnicianAuth() {
       {showForgot && <ForgotPassword onClose={() => setShowForgot(false)} />}
 
       <div className="auth-layout">
-        <button className="btn-back" onClick={() => navigate('/ingresar')}>
-          <i className="fa-solid fa-arrow-left" /> Volver
+        <button className="btn-back" onClick={() => navigate('/')}>
+          <i className="fa-solid fa-arrow-left" /> Volver al inicio
         </button>
 
         <div className="auth-container">
@@ -53,9 +53,9 @@ function TechnicianAuth() {
             <div className="auth-form-content">
               <div className="auth-header">
                 <div className="logo-box"><div className="logo-dot" /><span>PlomApp</span></div>
-                <span className="auth-role-badge technician">Acceso Técnico</span>
-                <h2 className="auth-title">Panel de técnicos</h2>
-                <p className="auth-subtitle">Ingresa para ver tus citas, horarios y servicios del día.</p>
+                <span className="auth-role-badge admin">Acceso Admin</span>
+                <h2 className="auth-title">Panel de administración</h2>
+                <p className="auth-subtitle">Gestiona citas, usuarios y métricas de la plataforma.</p>
               </div>
 
               <form onSubmit={handleSubmit} className="auth-form" noValidate>
@@ -63,7 +63,7 @@ function TechnicianAuth() {
                   <label>Correo electrónico</label>
                   <div className={`input-wrapper ${fieldErrors.email ? 'has-error' : ''}`}>
                     <i className="fa-regular fa-envelope" />
-                    <input type="email" name="email" placeholder="tecnico@mail.com"
+                    <input type="email" name="email" placeholder="admin@plomapp.com"
                       value={formData.email}
                       onChange={e => { setFormData({ ...formData, email: e.target.value }); setFieldErrors({}); setError('') }}
                     />
@@ -89,24 +89,23 @@ function TechnicianAuth() {
 
                 {error && <div className="error-message">{error}</div>}
 
-                <button type="submit" className="btn-auth-submit technician-submit" disabled={loading}>
+                <button type="submit" className="btn-auth-submit admin-submit" disabled={loading}>
                   {loading ? 'Verificando...' : 'Iniciar sesión'}
                 </button>
               </form>
 
-              <div className="tech-demo-hint">
-                <p><i className="fa-solid fa-circle-info" /> Casos de prueba (CP07):</p>
-                <p>tecnico@mail.com · Contraseña: <strong>T3cnic0_2026</strong></p>
+              <div className="tech-demo-hint admin-access-hint">
+                <p><i className="fa-solid fa-shield-halved" /> Acceso restringido de administración</p>
               </div>
             </div>
           </div>
 
-          <div className="auth-visual-side tech-visual">
+          <div className="auth-visual-side admin-visual">
             <div className="visual-overlay" />
             <div className="visual-content">
-              <div className="trust-badge"><i className="fa-solid fa-user-gear" /></div>
-              <h3>Gestiona tus servicios.</h3>
-              <p>Consulta citas, actualiza estados y organiza tu jornada de trabajo.</p>
+              <div className="trust-badge"><i className="fa-solid fa-chart-pie" /></div>
+              <h3>Control total.</h3>
+              <p>Supervisa citas, técnicos y clientes desde un solo lugar.</p>
             </div>
           </div>
         </div>
@@ -115,4 +114,4 @@ function TechnicianAuth() {
   )
 }
 
-export default TechnicianAuth
+export default AdminAuth

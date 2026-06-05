@@ -86,6 +86,11 @@
   background: #f0fdfa;
 }
 
+.login-type-card.admin:hover {
+  border-color: #1E293B;
+  background: #FFF8E1;
+}
+
 .login-type-icon {
   width: 52px;
   height: 52px;
@@ -105,6 +110,11 @@
 .login-type-card.technician .login-type-icon {
   background: linear-gradient(135deg, #0f766e, #14b8a6);
   color: white;
+}
+
+.login-type-card.admin .login-type-icon {
+  background: linear-gradient(135deg, #1E293B, #475569);
+  color: #FFC107;
 }
 
 .login-type-card h3 {
@@ -136,6 +146,10 @@
   color: #0f766e;
 }
 
+.login-type-card.admin .login-type-cta {
+  color: #1E293B;
+}
+
 .login-selector-hint {
   margin-top: 28px;
   padding: 16px 20px;
@@ -148,6 +162,12 @@
   font-size: 0.82rem;
   color: var(--e-text-muted, #64748B);
   margin: 4px 0;
+}
+
+@media (max-width: 900px) {
+  .login-selector-cards {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 640px) {
