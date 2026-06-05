@@ -1,0 +1,263 @@
+/* ===== TÉCNICO: overrides sobre dashboard.css ===== */
+.tech-theme {
+  --d-primary: #0f766e;
+  --d-accent: #14b8a6;
+  --d-shadow: 0 8px 30px -8px rgba(15, 118, 110, 0.12);
+}
+
+.tech-brand { color: #0f766e; }
+.tech-dot { background: #14b8a6; }
+
+.tech-nav-item.active {
+  background: linear-gradient(135deg, #ccfbf1 0%, #f0fdfa 100%);
+  color: #0f766e;
+  box-shadow: inset 3px 0 0 #0f766e;
+}
+
+.tech-nav-item:hover { color: #0f766e; }
+
+.tech-initials {
+  background: linear-gradient(135deg, #0f766e, #14b8a6) !important;
+}
+
+.tech-highlight {
+  background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%) !important;
+}
+
+.tech-stat.scheduled { background: #ccfbf1; color: #0f766e; }
+.tech-stat.completed { background: #dcfce7; color: #16a34a; }
+.tech-stat.location { background: #fef3c7; color: #d97706; }
+
+.tech-rating-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fef3c7;
+  color: #d97706;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.tech-btn { background: white !important; color: #0f766e !important; box-shadow: none !important; }
+.tech-btn:hover { background: #f0fdfa !important; }
+.tech-text { color: #0f766e; }
+.tech-text:hover { color: #0d6560; }
+
+.tech-action-row { margin-top: 16px; display: flex; gap: 10px; }
+
+.tech-specialties {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.tech-specialty-tag {
+  background: #ccfbf1;
+  color: #0f766e;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  text-transform: capitalize;
+}
+
+.tech-today-slots, .tech-day-slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.tech-slot-tag {
+  background: #f0fdfa;
+  color: #0f766e;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid #ccfbf1;
+}
+
+.tech-schedule-preview h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tech-weekly-schedule {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12px;
+}
+
+.tech-day-card {
+  background: var(--d-bg, #F0F7FA);
+  border-radius: 12px;
+  padding: 14px 12px;
+  text-align: center;
+}
+
+.tech-day-card.off { opacity: 0.5; }
+
+.tech-day-card h4 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0f766e;
+  margin: 0 0 10px;
+}
+
+.tech-day-off {
+  font-size: 0.78rem;
+  color: var(--d-muted, #64748B);
+  margin: 0;
+}
+
+.tech-appt-list { display: flex; flex-direction: column; gap: 12px; }
+.tech-appt-list.full { margin-top: 8px; }
+
+.tech-appt-row {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--d-bg, #F0F7FA);
+  border-radius: 14px;
+  border-left: 4px solid #0f766e;
+  transition: transform 0.2s;
+}
+
+.tech-appt-row.completed { border-left-color: #22c55e; opacity: 0.8; }
+.tech-appt-row.in_progress { border-left-color: #f59e0b; }
+.tech-appt-row.cancelled { border-left-color: #ef4444; opacity: 0.6; }
+
+.tech-appt-client {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tech-client-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.tech-client-avatar.initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0077B6, #0096C7);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.tech-appt-service {
+  font-weight: 700;
+  font-size: 0.92rem;
+  margin: 0;
+}
+
+.tech-appt-client-name {
+  font-size: 0.8rem;
+  color: var(--d-muted, #64748B);
+  margin: 2px 0 0;
+}
+
+.tech-appt-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--d-muted, #64748B);
+}
+
+.tech-appt-details span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tech-appt-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.tech-status-btn {
+  border: none;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.tech-status-btn.start { background: #ccfbf1; color: #0f766e; }
+.tech-status-btn.start:hover { background: #0f766e; color: white; }
+.tech-status-btn.complete { background: #dcfce7; color: #16a34a; }
+.tech-status-btn.complete:hover { background: #16a34a; color: white; }
+.tech-status-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.tech-profile-stats {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--d-border, #E0F2FE);
+}
+
+.tech-profile-stats div {
+  text-align: center;
+}
+
+.tech-profile-stats strong {
+  display: block;
+  font-size: 1.5rem;
+  color: #0f766e;
+}
+
+.tech-profile-stats span {
+  font-size: 0.78rem;
+  color: var(--d-muted, #64748B);
+}
+
+.tech-icon { color: #0f766e !important; }
+
+.dash-badge.in_progress { background: #fef3c7; color: #d97706; }
+.dash-activity-dot.in_progress { background: #f59e0b; }
+.dash-appt-card.in_progress { border-left-color: #f59e0b; }
+
+@media (max-width: 900px) {
+  .tech-appt-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .tech-appt-actions {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .tech-weekly-schedule {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

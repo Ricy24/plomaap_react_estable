@@ -2,7 +2,7 @@ import '../styles/landing.css'
 import Header from '../components/Header'
 import HeroSection from '../components/HeroSection'
 
-function Home({ onLogin }) {
+function Home({ onLogin, onTechnicianLogin }) {
   return (
     <div className="landing-elegant">
       
@@ -85,7 +85,7 @@ function Home({ onLogin }) {
         <div className="tech-box">
           <h2>¿Eres un profesional de excelencia?</h2>
           <p>Buscamos expertos en mantenimiento que quieran multiplicar sus ingresos, manejar su propio tiempo y pertenecer a la red más exclusiva de servicios a domicilio.</p>
-          <button className="btn-solid-white">Postularme como Técnico</button>
+          <button className="btn-solid-white" onClick={onTechnicianLogin}>Acceso para Técnicos</button>
         </div>
       </section>
 

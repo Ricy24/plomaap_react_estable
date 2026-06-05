@@ -43,6 +43,333 @@
       "avatar": "https://lh3.googleusercontent.com/a/ACg8ocKRIQEW6lsh2UMPNHLPWAZgwGJlOU2MV02pGwZY3u5HNsYGRd8nGw=s96-c",
       "role": "user",
       "createdAt": "2026-06-05"
+    },
+    {
+      "id": 5,
+      "name": "ss",
+      "email": "ss@gmail.com",
+      "password": "123",
+      "phone": "3239214605",
+      "address": "kr 71 58 50 sur",
+      "avatar": null,
+      "role": "user",
+      "createdAt": "2026-06-05"
+    },
+    {
+      "id": 6,
+      "name": "Andres duran",
+      "email": "anriducof2019@gmail.com",
+      "password": "123",
+      "phone": "3239219404",
+      "address": "kr 71 58 50 sur",
+      "avatar": "https://res.cloudinary.com/dxoejokli/image/upload/v1780682282/co7bl6qkiqfryhtgipdv.png",
+      "role": "user",
+      "createdAt": "2026-06-05"
+    },
+    {
+      "id": 7,
+      "name": "Carlos Méndez",
+      "email": "carlos.tecnico@example.com",
+      "password": "123456",
+      "phone": "3004567890",
+      "address": "Calle 127 # 15-20, Usaquén, Bogotá",
+      "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop",
+      "role": "technician",
+      "createdAt": "2024-03-01"
+    },
+    {
+      "id": 8,
+      "name": "Luis Rodríguez",
+      "email": "luis.tecnico@example.com",
+      "password": "123456",
+      "phone": "3005678901",
+      "address": "Carrera 30 # 45-10, Teusaquillo, Bogotá",
+      "avatar": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=400&fit=crop",
+      "role": "technician",
+      "createdAt": "2024-04-15"
+    }
+  ],
+  "services": [
+    {
+      "id": "fugas",
+      "name": "Fugas de agua",
+      "desc": "Goteras, tuberías, llaves",
+      "icon": "fa-droplet",
+      "color": "water",
+      "priceFrom": 80000
+    },
+    {
+      "id": "destapes",
+      "name": "Destapes",
+      "desc": "Baños, cocinas, cañerías",
+      "icon": "fa-toilet",
+      "color": "drain",
+      "priceFrom": 60000
+    },
+    {
+      "id": "duchas",
+      "name": "Duchas y baños",
+      "desc": "Grifería, sanitarios, mamparas",
+      "icon": "fa-shower",
+      "color": "shower",
+      "priceFrom": 90000
+    },
+    {
+      "id": "instalaciones",
+      "name": "Instalaciones",
+      "desc": "Lavaplatos, calentadores, tubería",
+      "icon": "fa-wrench",
+      "color": "pipe",
+      "priceFrom": 120000
+    }
+  ],
+  "technicians": [
+    {
+      "id": 1,
+      "userId": 3,
+      "specialties": [
+        "fugas",
+        "destapes",
+        "instalaciones"
+      ],
+      "zones": [
+        "Chapinero",
+        "Barrios Unidos",
+        "Teusaquillo"
+      ],
+      "rating": 4.9,
+      "completedJobs": 142,
+      "schedule": {
+        "mon": [
+          "8:00 am",
+          "10:00 am",
+          "12:00 pm",
+          "2:00 pm",
+          "4:00 pm",
+          "6:00 pm"
+        ],
+        "tue": [
+          "8:00 am",
+          "10:00 am",
+          "12:00 pm",
+          "2:00 pm",
+          "4:00 pm"
+        ],
+        "wed": [
+          "8:00 am",
+          "10:00 am",
+          "12:00 pm",
+          "2:00 pm",
+          "4:00 pm",
+          "6:00 pm"
+        ],
+        "thu": [
+          "10:00 am",
+          "12:00 pm",
+          "2:00 pm",
+          "4:00 pm",
+          "6:00 pm"
+        ],
+        "fri": [
+          "8:00 am",
+          "10:00 am",
+          "12:00 pm",
+          "2:00 pm",
+          "4:00 pm"
+        ],
+        "sat": [
+          "8:00 am",
+          "10:00 am",
+          "12:00 pm"
+        ],
+        "sun": []
+      }
+    },
+    {
+      "id": 2,
+      "userId": 7,
+      "specialties": [
+        "fugas",
+        "duchas",
+        "instalaciones"
+      ],
+      "zones": [
+        "Usaquén",
+        "Chapinero",
+        "Cedritos"
+      ],
+      "rating": 4.7,
+      "completedJobs": 98,
+      "schedule": {
+        "mon": [
+          "8:00 am",
+          "10:00 am",
+          "2:00 pm",
+          "4:00 pm",
+          "6:00 pm"
+        ],
+        "tue": [
+          "8:00 am",
+          "10:00 am",
+          "12:00 pm",
+          "2:00 pm",
+          "4:00 pm",
+          "6:00 pm"
+        ],
+        "wed": [
+          "8:00 am",
+          "10:00 am",
+          "2:00 pm",
+          "4:00 pm"
+        ],
+        "thu": [
+          "8:00 am",
+          "10:00 am",
+          "12:00 pm",
+          "2:00 pm",
+          "4:00 pm",
+          "6:00 pm"
+        ],
+        "fri": [
+          "10:00 am",
+          "12:00 pm",
+          "2:00 pm",
+          "4:00 pm"
+        ],
+        "sat": [
+          "8:00 am",
+          "10:00 am"
+        ],
+        "sun": []
+      }
+    },
+    {
+      "id": 3,
+      "userId": 8,
+      "specialties": [
+        "destapes",
+        "duchas",
+        "fugas"
+      ],
+      "zones": [
+        "Teusaquillo",
+        "Centro",
+        "La Soledad"
+      ],
+      "rating": 4.8,
+      "completedJobs": 115,
+      "schedule": {
+        "mon": [
+          "10:00 am",
+          "12:00 pm",
+          "2:00 pm",
+          "4:00 pm",
+          "6:00 pm"
+        ],
+        "tue": [
+          "8:00 am",
+          "10:00 am",
+          "12:00 pm",
+          "2:00 pm",
+          "6:00 pm"
+        ],
+        "wed": [
+          "8:00 am",
+          "10:00 am",
+          "12:00 pm",
+          "2:00 pm",
+          "4:00 pm",
+          "6:00 pm"
+        ],
+        "thu": [
+          "8:00 am",
+          "10:00 am",
+          "2:00 pm",
+          "4:00 pm"
+        ],
+        "fri": [
+          "8:00 am",
+          "10:00 am",
+          "12:00 pm",
+          "2:00 pm",
+          "4:00 pm",
+          "6:00 pm"
+        ],
+        "sat": [
+          "8:00 am",
+          "10:00 am",
+          "12:00 pm",
+          "2:00 pm"
+        ],
+        "sun": []
+      }
+    }
+  ],
+  "appointments": [
+    {
+      "id": 1,
+      "userId": 1,
+      "technicianId": 3,
+      "serviceId": "fugas",
+      "serviceName": "Fugas de agua",
+      "date": "2026-05-12",
+      "time": "10:00 am",
+      "address": "Calle 85 # 11-53, Chapinero, Bogotá",
+      "status": "completed",
+      "notes": "Fuga en lavaplatos reparada",
+      "createdAt": "2026-05-10"
+    },
+    {
+      "id": 2,
+      "userId": 1,
+      "technicianId": 7,
+      "serviceId": "instalaciones",
+      "serviceName": "Instalaciones",
+      "date": "2026-05-22",
+      "time": "2:00 pm",
+      "address": "Calle 85 # 11-53, Chapinero, Bogotá",
+      "status": "completed",
+      "notes": "Instalación de lavaplatos",
+      "createdAt": "2026-05-20"
+    },
+    {
+      "id": 3,
+      "userId": 1,
+      "technicianId": 3,
+      "serviceId": "destapes",
+      "serviceName": "Destapes",
+      "date": "2026-06-10",
+      "time": "10:00 am",
+      "address": "Calle 85 # 11-53, Chapinero, Bogotá",
+      "status": "scheduled",
+      "notes": "",
+      "createdAt": "2026-06-01"
+    },
+    {
+      "id": 4,
+      "userId": 2,
+      "technicianId": 3,
+      "serviceId": "fugas",
+      "serviceName": "Fugas de agua",
+      "date": "2026-06-05",
+      "time": "2:00 pm",
+      "address": "Carrera 7 # 125-30, Usaquén, Bogotá",
+      "status": "scheduled",
+      "notes": "Fuga en baño principal",
+      "createdAt": "2026-06-04"
+    },
+    {
+      "id": 5,
+      "userId": 4,
+      "technicianId": 3,
+      "serviceId": "fugas",
+      "serviceName": "Fugas de agua",
+      "date": "2026-06-06",
+      "time": "8:00 am",
+      "address": "Calle 85 # 11-53, Chapinero, Bogotá",
+      "status": "scheduled",
+      "notes": "",
+      "createdAt": "2026-06-05"
     }
   ]
 }

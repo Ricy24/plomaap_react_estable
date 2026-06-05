@@ -1,4 +1,15 @@
 /* ===== ESTILOS DE AUTENTICACIÓN (SPLIT SCREEN) ===== */
+:root {
+  --e-bg-white: #FFFFFF;
+  --e-bg-light: #F0F7FA;
+  --e-text-dark: #1E3A8A;
+  --e-text-muted: #64748B;
+  --e-primary: #0077B6;
+  --e-accent: #0096C7;
+  --e-border: #E0F2FE;
+  --shadow-elegant: 0 20px 40px -10px rgba(0, 119, 182, 0.12);
+}
+
 .auth-wrapper {
   min-height: 100vh;
   background-color: var(--e-bg-light);
@@ -426,3 +437,42 @@
     top: 20px; left: 20px;
   }
 }
+
+/* ===== ROLE BADGES ===== */
+.auth-role-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.auth-role-badge.client { background: #e0f2fe; color: #0077B6; }
+.auth-role-badge.technician { background: #ccfbf1; color: #0f766e; }
+
+.auth-visual-side.tech-visual {
+  background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+}
+
+.auth-visual-side.client-visual {
+  background: linear-gradient(135deg, #0077B6 0%, #0096C7 100%);
+}
+
+.btn-auth-submit.technician-submit { background: #0f766e; }
+.btn-auth-submit.technician-submit:hover { background: #0d6560; }
+
+.tech-demo-hint {
+  margin-top: 24px;
+  padding: 16px;
+  background: #f0fdfa;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  color: #64748B;
+  line-height: 1.6;
+}
+
+.tech-demo-hint p { margin: 2px 0; }
+.tech-demo-hint i { color: #0f766e; margin-right: 4px; }
