@@ -87,8 +87,86 @@
       "avatar": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=400&fit=crop",
       "role": "technician",
       "createdAt": "2024-04-15"
+    },
+    {
+      "id": 9,
+      "name": "Valentina Admin",
+      "email": "admin@plomapp.com",
+      "password": "Admin789*",
+      "status": "active",
+      "phone": "3009998877",
+      "address": "Oficina central, Bogotá",
+      "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop",
+      "role": "admin",
+      "createdAt": "2024-01-01"
+    },
+    {
+      "id": 10,
+      "name": "1223",
+      "email": "shsahjash@dd.com",
+      "password": "123456",
+      "phone": "aaaa",
+      "address": "ssas84",
+      "avatar": "https://res.cloudinary.com/dxoejokli/image/upload/v1780690110/ptyn4cn51s93ylsgmppt.png",
+      "role": "user",
+      "createdAt": "2026-06-05"
+    },
+    {
+      "id": 11,
+      "name": "Juan Cliente",
+      "email": "cliente@mail.com",
+      "password": "Cl@ve123*",
+      "phone": "3229874810",
+      "address": "Cra 77A #45d sur, Bogotá",
+      "avatar": null,
+      "role": "user",
+      "status": "active",
+      "createdAt": "2026-06-05"
+    },
+    {
+      "id": 12,
+      "name": "Juan Técnico Prueba",
+      "email": "tecnico@mail.com",
+      "password": "T3cnic0_2026",
+      "phone": "3229874811",
+      "address": "Cra 77A #45d sur, Bogotá",
+      "avatar": null,
+      "role": "technician",
+      "status": "active",
+      "createdAt": "2026-06-05"
     }
   ],
+  "devices": [
+    {
+      "id": 1,
+      "userId": 11,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+      "registeredAt": "2026-06-05T20:16:26.223Z",
+      "lastAccess": "2026-06-05T21:21:38.971Z"
+    },
+    {
+      "id": 2,
+      "userId": 4,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+      "registeredAt": "2026-06-05T20:21:33.619Z",
+      "lastAccess": "2026-06-05T20:57:27.060Z"
+    },
+    {
+      "id": 3,
+      "userId": 9,
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+      "registeredAt": "2026-06-05T20:22:16.890Z",
+      "lastAccess": "2026-06-05T20:58:39.308Z"
+    },
+    {
+      "id": 4,
+      "userId": 4,
+      "userAgent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Mobile Safari/537.36",
+      "registeredAt": "2026-06-05T20:41:20.524Z",
+      "lastAccess": "2026-06-05T20:41:20.524Z"
+    }
+  ],
+  "passwordResets": [],
   "services": [
     {
       "id": "fugas",
@@ -138,7 +216,7 @@
         "Teusaquillo"
       ],
       "rating": 4.9,
-      "completedJobs": 142,
+      "completedJobs": 143,
       "schedule": {
         "mon": [
           "8:00 am",
@@ -303,6 +381,57 @@
         ],
         "sun": []
       }
+    },
+    {
+      "id": 4,
+      "userId": 12,
+      "specialties": [
+        "fugas",
+        "destapes",
+        "duchas"
+      ],
+      "zones": [
+        "Chapinero",
+        "Suba",
+        "Usaquén"
+      ],
+      "rating": 4.6,
+      "completedJobs": 45,
+      "schedule": {
+        "mon": [
+          "8:00 am",
+          "10:00 am",
+          "2:00 pm",
+          "4:00 pm"
+        ],
+        "tue": [
+          "8:00 am",
+          "10:00 am",
+          "12:00 pm",
+          "2:00 pm"
+        ],
+        "wed": [
+          "10:00 am",
+          "12:00 pm",
+          "2:00 pm",
+          "4:00 pm"
+        ],
+        "thu": [
+          "8:00 am",
+          "10:00 am",
+          "2:00 pm"
+        ],
+        "fri": [
+          "8:00 am",
+          "10:00 am",
+          "12:00 pm"
+        ],
+        "sat": [
+          "8:00 am",
+          "10:00 am"
+        ],
+        "sun": []
+      }
     }
   ],
   "appointments": [
@@ -341,7 +470,7 @@
       "date": "2026-06-10",
       "time": "10:00 am",
       "address": "Calle 85 # 11-53, Chapinero, Bogotá",
-      "status": "scheduled",
+      "status": "completed",
       "notes": "",
       "createdAt": "2026-06-01"
     },
@@ -367,6 +496,19 @@
       "date": "2026-06-06",
       "time": "8:00 am",
       "address": "Calle 85 # 11-53, Chapinero, Bogotá",
+      "status": "scheduled",
+      "notes": "",
+      "createdAt": "2026-06-05"
+    },
+    {
+      "id": 6,
+      "userId": 11,
+      "technicianId": 3,
+      "serviceId": "fugas",
+      "serviceName": "Fugas de agua",
+      "date": "2023-06-05",
+      "time": "6:00 pm",
+      "address": "SENA Complejo del Sur, Transversal 31, San Jorge Central, UPZs de Bogotá, Localidad Antonio Nariño, Bogotá, Bogotá, Distrito Capital, RAP (Especial) Central, 111511, Colombia",
       "status": "scheduled",
       "notes": "",
       "createdAt": "2026-06-05"
