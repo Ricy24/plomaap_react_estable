@@ -7,6 +7,7 @@ const STATUS_LABELS = {
 
 function AdminSchedule({ weekCalendar, todaySchedule }) {
   const activeDay = weekCalendar?.find(d => d.isToday)
+  const scheduleItems = Array.isArray(todaySchedule) ? todaySchedule : []
 
   return (
     <div className="adm-card adm-schedule-card">
@@ -26,10 +27,10 @@ function AdminSchedule({ weekCalendar, todaySchedule }) {
       </div>
 
       <div className="adm-timeline">
-        {todaySchedule?.length === 0 ? (
+        {scheduleItems.length === 0 ? (
           <p className="adm-empty">Sin citas para {activeDay?.label || 'hoy'}</p>
         ) : (
-          todaySchedule.map(event => (
+          scheduleItems.map(event => (
             <div key={event.id} className={`adm-timeline-item ${event.isPrimary ? 'primary' : ''}`}>
               <div className="adm-timeline-time">
                 <span>{event.time}</span>

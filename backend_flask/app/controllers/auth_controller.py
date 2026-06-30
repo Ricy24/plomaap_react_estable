@@ -92,6 +92,7 @@ def register():
         'welcome',
         {
             'name': user.name,
+            'role': user.role,
             'role_label': 'Cliente' if user.role == 'customer' else 'Técnico' if user.role == 'technician' else 'Administrador',
             'text_body': 'Gracias por registrarte en PlomApp.'
         }

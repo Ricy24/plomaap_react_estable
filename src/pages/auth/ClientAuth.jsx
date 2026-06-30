@@ -29,6 +29,8 @@ function ClientAuth() {
   const [showForgot, setShowForgot] = useState(false)
   const [imagePreview, setImagePreview] = useState(null)
   const [uploadingImage, setUploadingImage] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [formData, setFormData] = useState({ ...EMPTY_FORM })
 
   const saveSession = (data) => {
@@ -43,6 +45,13 @@ function ClientAuth() {
       return next
     })
     setError('')
+  }
+
+  const validatePasswordMatch = () => {
+    if (!isLogin && formData.confirmPassword && formData.password !== formData.confirmPassword) {
+      return 'Las contraseñas no coinciden'
+    }
+    return ''
   }
 
   const handleInputChange = (e) => {
@@ -229,8 +238,21 @@ function ClientAuth() {
                   <label>Contraseña</label>
                   <div className={`input-wrapper ${fieldErrors.password ? 'has-error' : ''}`}>
                     <i className="fa-solid fa-lock" />
-                    <input type="password" name="password" placeholder="Mín. 8 caracteres"
-                      value={formData.password} onChange={handleInputChange} />
+                    <input 
+                      type={showPassword ? 'text' : 'password'} 
+                      name="password" 
+                      placeholder="Mín. 8 caracteres"
+                      value={formData.password} 
+                      onChange={handleInputChange} 
+                    />
+                    <button
+                      type="button"
+                      className="toggle-password-btn"
+                      onClick={() => setShowPassword(!showPassword)}
+                      title={showPassword ? 'Ocultar' : 'Mostrar'}
+                    >
+                      <i className={`fa-solid fa-eye${showPassword ? '' : '-slash'}`} />
+                    </button>
                   </div>
                   {fieldErrors.password && <p className="field-error">{fieldErrors.password}</p>}
                   {!isLogin && !fieldErrors.password && (
@@ -242,12 +264,29 @@ function ClientAuth() {
                   <>
                     <div className="input-group">
                       <label>Confirmar contraseña</label>
-                      <div className={`input-wrapper ${fieldErrors.confirmPassword ? 'has-error' : ''}`}>
+                      <div className={`input-wrapper ${fieldErrors.confirmPassword ? 'has-error' : ''} ${validatePasswordMatch() ? 'has-warning' : formData.confirmPassword && formData.password === formData.confirmPassword ? 'has-success' : ''}`}>
                         <i className="fa-solid fa-lock" />
-                        <input type="password" name="confirmPassword" placeholder="Repita su contraseña"
-                          value={formData.confirmPassword} onChange={handleInputChange} />
+                        <input 
+                          type={showConfirmPassword ? 'text' : 'password'} 
+                          name="confirmPassword" 
+                          placeholder="Repita su contraseña"
+                          value={formData.confirmPassword} 
+                          onChange={handleInputChange} 
+                        />
+                        <button
+                          type="button"
+                          className="toggle-password-btn"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          title={showConfirmPassword ? 'Ocultar' : 'Mostrar'}
+                        >
+                          <i className={`fa-solid fa-eye${showConfirmPassword ? '' : '-slash'}`} />
+                        </button>
                       </div>
                       {fieldErrors.confirmPassword && <p className="field-error">{fieldErrors.confirmPassword}</p>}
+                      {validatePasswordMatch() && <p className="field-warning">{validatePasswordMatch()}</p>}
+                      {formData.confirmPassword && formData.password === formData.confirmPassword && !validatePasswordMatch() && (
+                        <p className="field-success"><i className="fa-solid fa-check" /> Las contraseñas coinciden</p>
+                      )}
                     </div>
 
                     <div className="input-group">
