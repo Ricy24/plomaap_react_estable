@@ -34,7 +34,7 @@ function AppRoutes() {
         </GuestOnly>
       } />
       <Route path="/ingresar/cliente" element={
-        <GuestOnly role="user">
+        <GuestOnly role="customer">
           <ClientAuth />
         </GuestOnly>
       } />
@@ -51,7 +51,7 @@ function AppRoutes() {
       } />
 
       <Route path="/cliente" element={
-        <ProtectedRoute allowedRoles={['user']}>
+        <ProtectedRoute allowedRoles={['customer']}>
           <ClientDashboard
             user={user}
             onLogout={logout}

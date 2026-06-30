@@ -88,7 +88,7 @@ function ClientDashboard({ user, onLogout, onUserUpdate }) {
         serviceId: selectedService.id,
         date: selectedDate,
         time: selectedTime,
-        address: userAddress
+        notes: `Dirección de servicio: ${userAddress}`
       }
       if (selectedTechnician) {
         payload.technicianId = selectedTechnician.id
@@ -294,8 +294,8 @@ function ClientDashboard({ user, onLogout, onUserUpdate }) {
                     onClick={() => setSelectedService(s)}>
                     <div className={`dash-service-icon lg ${s.color}`}><i className={`fa-solid ${s.icon}`} /></div>
                     <h4>{s.name}</h4>
-                    <p>{s.desc}</p>
-                    <span className="dash-service-price">{formatPrice(s.priceFrom)}</span>
+                    <p>{s.description}</p>
+                    <span className="dash-service-price">{formatPrice(s.base_price || 0)}</span>
                   </button>
                 ))}
               </div>
@@ -485,13 +485,16 @@ function ProfileCard({ user, userAddress, large = false }) {
 }
 
 function ActivityItem({ appointment: a }) {
-  const statusLabel = { scheduled: 'Programado', in_progress: 'En curso', completed: 'Completado', cancelled: 'Cancelado' }
+  const statusLabel = { pending: 'Pendiente', scheduled: 'Programado', in_progress: 'En curso', completed: 'Completado', cancelled: 'Cancelado' }
   return (
     <div className="dash-activity-item">
       <div className={`dash-activity-dot ${a.status}`} />
       <div className="dash-activity-info">
-        <p className="dash-activity-title">{a.serviceName}</p>
-        <p className="dash-activity-date">{a.dateFormatted} · {a.time} · {a.technicianName}</p>
+        {/* 🚨 Accedemos al objeto anidado a.service?.name */}
+        <p className="dash-activity-title">{a.service?.name || 'Servicio'}</p>
+        <p className="dash-activity-date">
+          {a.date} · {a.time} · {a.technician?.name || 'Técnico por asignar'}
+        </p>
       </div>
       <span className={`dash-badge ${a.status}`}>{statusLabel[a.status] || a.status}</span>
     </div>
@@ -499,21 +502,23 @@ function ActivityItem({ appointment: a }) {
 }
 
 function AppointmentCard({ appointment: a, onCancel, onReschedule, isUpcoming }) {
-  const statusLabel = { scheduled: 'Programado', in_progress: 'En curso', completed: 'Completado', cancelled: 'Cancelado' }
-  const canModify = isUpcoming && (a.status === 'scheduled' || a.status === 'in_progress')
+  const statusLabel = { pending: 'Pendiente', scheduled: 'Programado', in_progress: 'En curso', completed: 'Completado', cancelled: 'Cancelado' }
+  const canModify = isUpcoming && (a.status === 'scheduled' || a.status === 'pending')
   
   return (
     <div className={`dash-appt-card ${a.status}`}>
       <div className="dash-appt-header">
-        <h4>{a.serviceName}</h4>
+        {/* 🚨 Accedemos a los datos enriquecidos */}
+        <h4>{a.service?.name || 'Servicio'}</h4>
         <span className={`dash-badge ${a.status}`}>{statusLabel[a.status] || a.status}</span>
       </div>
       <div className="dash-appt-meta">
-        <span><i className="fa-regular fa-calendar" /> {a.dateFormatted}</span>
+        <span><i className="fa-regular fa-calendar" /> {a.date}</span>
         <span><i className="fa-regular fa-clock" /> {a.time}</span>
-        <span><i className="fa-solid fa-user-gear" /> {a.technicianName}</span>
+        <span><i className="fa-solid fa-user-gear" /> {a.technician?.name || 'Por asignar'}</span>
       </div>
-      <p className="dash-appt-address"><i className="fa-solid fa-location-dot" /> {a.address}</p>
+      {/* Usamos las notas donde guardamos la dirección u otros detalles */}
+      <p className="dash-appt-address"><i className="fa-solid fa-location-dot" /> {a.notes || a.customer?.address}</p>
       
       {canModify && (
         <div className="dash-appt-actions">

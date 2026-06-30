@@ -88,98 +88,96 @@ function ClientAuth() {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
-    setSuccess('')
+    e.preventDefault();
+    setError('');
+    setSuccess('');
 
     if (isLogin) {
-      const errors = validateLogin(formData)
-      if (Object.keys(errors).length > 0) {
-        setFieldErrors(errors)
-        return
-      }
+        const errors = validateLogin(formData);
+        if (Object.keys(errors).length > 0) {
+            setFieldErrors(errors);
+            return;
+        }
     } else {
-      const errors = validateRegister(formData)
-      if (Object.keys(errors).length > 0) {
-        setFieldErrors(errors)
-        return
-      }
+        const errors = validateRegister(formData);
+        if (Object.keys(errors).length > 0) {
+            setFieldErrors(errors);
+            return;
+        }
     }
+
 
     setLoading(true)
     try {
       if (isLogin) {
-        const data = await authApi.login(formData.email.trim(), formData.password, 'user')
-        if (!data.success) { setError(data.message); return }
-        saveSession(data)
+          const data = await authApi.login(formData.email.trim(), formData.password, 'customer');
+          if (!data.success) { 
+              setError(data.message); 
+              return; 
+          }
+          saveSession(data);
+          navigate('/cliente'); 
       } else {
-        const data = await authApi.register({
-          name: formData.name.trim(),
-          email: formData.email.trim(),
-          password: formData.password,
-          confirmPassword: formData.confirmPassword,
-          phone: normalizePhone(formData.phone),
-          address: formData.address.trim(),
-          avatar: formData.avatar
-        })
-        if (!data.success) { setError(data.message); return }
-        setSuccess(data.message || MESSAGES.registerSuccess)
-        switchMode(true)
-        setFormData(prev => ({
-          ...EMPTY_FORM,
-          email: formData.email.trim(),
-          address: formData.address.trim()
-        }))
+          const data = await authApi.register({
+              name: formData.name.trim(),
+              email: formData.email.trim(),
+              password: formData.password,
+              confirmPassword: formData.confirmPassword,
+              phone: normalizePhone(formData.phone),
+              address: formData.address.trim(),
+              avatar: formData.avatar
+          });
+          if (!data.success) { 
+              setError(data.message); 
+              return; 
+          }
+          setSuccess(data.message || MESSAGES.registerSuccess);
+          switchMode(true);
+          setFormData(prev => ({
+              ...EMPTY_FORM,
+              email: prev.email,
+              address: prev.address
+          }));
       }
-    } catch (err) {
-      setError(err.message || 'Error de conexión. ¿Está el backend en puerto 5000?')
-    } finally {
-      setLoading(false)
-    }
+  } catch (err) {
+      setError('Error de conexión. Verifica que el servidor Flask esté corriendo.');
+  } finally {
+      setLoading(false);
   }
+}
 
   const handleGoogleLogin = async (credentialResponse) => {
     setLoading(true)
     setError('')
     setFieldErrors({})
     try {
-      const base64 = credentialResponse.credential.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
-      const googleUser = JSON.parse(decodeURIComponent(
-        atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')
-      ))
+      // 1. Tomamos el token intacto que nos dio Google
+      const token = credentialResponse.credential
 
-      let data = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
+      // 2. Lo enviamos a la ruta CORRECTA del backend
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/google-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: googleUser.email, password: 'google_' + googleUser.sub, role: 'user' })
-      }).then(r => r.json())
+        body: JSON.stringify({ credential: token })
+      })
+      
+      const data = await response.json()
 
-      if (!data.success) {
-        data = await authApi.register({
-          name: googleUser.name,
-          email: googleUser.email,
-          password: 'google_' + googleUser.sub,
-          phone: '',
-          address: localStorage.getItem('selectedAddress') || 'Bogotá',
-          avatar: googleUser.picture
-        })
-        if (data.success && data.token) {
-          saveSession(data)
-          return
-        }
-        if (data.success) {
-          data = await authApi.login(googleUser.email, 'google_' + googleUser.sub, 'user')
-        }
+      // 3. Verificamos la respuesta
+      if (!response.ok) {
+        setError(data.error || 'Error al iniciar sesión con Google')
+        return
       }
-
-      if (!data.success) { setError(data.message); return }
-      saveSession(data)
-    } catch {
-      setError('Error al procesar Google Login')
+      
+      // 4. Éxito: Guardamos la sesión
+      saveSession({ token: data.token, user: data.user })
+      
+    } catch (err) {
+      setError('Error de red al procesar Google Login. Verifica que el servidor Flask esté corriendo.')
     } finally {
       setLoading(false)
     }
-  }
+}
 
   return (
     <div className="auth-wrapper view-transition">
