@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>📅 Nueva cita asignada</title>
+  </head>
+  <body style="margin:0; padding:0; background:#f3f8ff; font-family:'Segoe UI', Arial, sans-serif; color:#183a5b;">
+    <div style="max-width:640px; margin:24px auto; background:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 8px 30px rgba(31, 97, 165, 0.12);">
+      <div style="background:linear-gradient(90deg, #f59e0b 0%, #d97706 100%); padding:32px; color:#ffffff;">
+        <div style="font-size: 28px; margin-bottom: 8px;">📅</div>
+        <h1 style="margin:0; font-size:28px; font-weight:bold;">Nueva cita asignada</h1>
+        <p style="margin:12px 0 0; opacity:0.95; font-size:15px;">Tienes un nuevo trabajo en tu agenda</p>
+      </div>
+      <div style="padding:32px;">
+        <p style="margin:0 0 16px; font-size:16px; font-weight:bold;">¡Hola {{ name }}!</p>
+        <p style="margin:0 0 24px; line-height:1.8; font-size:15px;">Se te ha asignado una nueva cita. A continuación encontrarás todos los detalles que necesitas para hacer un excelente trabajo.</p>
+        
+        <div style="background: #fff7ed; border-radius: 8px; padding: 18px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+          <strong style="display: block; margin-bottom: 12px; font-size: 16px; color: #92400e;">📋 Información de la cita:</strong>
+          <table style="width: 100%; font-size: 15px; line-height: 1.8;">
+            <tr>
+              <td style="padding: 6px 0; color: #78350f;"><strong>Servicio:</strong></td>
+              <td style="padding: 6px 0; text-align: right; font-weight: bold; color: #92400e;">{{ service_name }}</td>
+            </tr>
+            <tr style="border-top: 1px solid #fed7aa;">
+              <td style="padding: 6px 0; color: #78350f;"><strong>📅 Fecha:</strong></td>
+              <td style="padding: 6px 0; text-align: right; font-weight: bold; color: #92400e;">{{ appointment_date }}</td>
+            </tr>
+            <tr style="border-top: 1px solid #fed7aa;">
+              <td style="padding: 6px 0; color: #78350f;"><strong>⏰ Hora:</strong></td>
+              <td style="padding: 6px 0; text-align: right; font-weight: bold; color: #92400e;">{{ appointment_time }}</td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="background: #f0f9ff; border-radius: 8px; padding: 18px; margin: 20px 0; border-left: 4px solid #2f80ed;">
+          <strong style="display: block; margin-bottom: 12px; font-size: 16px; color: #0c3a5c;">👤 Información del cliente:</strong>
+          <table style="width: 100%; font-size: 15px; line-height: 1.8;">
+            <tr>
+              <td style="padding: 6px 0; color: #666;"><strong>Nombre:</strong></td>
+              <td style="padding: 6px 0; text-align: right; color: #183a5b;">{{ customer_name }}</td>
+            </tr>
+            <tr style="border-top: 1px solid #e0e7ff;">
+              <td style="padding: 6px 0; color: #666;"><strong>📞 Teléfono:</strong></td>
+              <td style="padding: 6px 0; text-align: right; color: #183a5b;">{{ customer_phone }}</td>
+            </tr>
+            {% if customer_address %}
+            <tr style="border-top: 1px solid #e0e7ff;">
+              <td style="padding: 6px 0; color: #666;"><strong>📍 Dirección:</strong></td>
+              <td style="padding: 6px 0; text-align: right; color: #183a5b;">{{ customer_address }}</td>
+            </tr>
+            {% endif %}
+          </table>
+        </div>
+
+        <div style="background: #ecfdf5; border-radius: 8px; padding: 16px; margin: 20px 0;">
+          <strong style="display: block; margin-bottom: 8px; color: #065f46; font-size: 15px;">✓ Acciones recomendadas:</strong>
+          <ul style="margin: 8px 0; padding-left: 20px; font-size: 14px; color: #047857; line-height: 1.8;">
+            <li>Confirma tu disponibilidad en tu agenda</li>
+            <li>Revisa el historial del cliente en PlomApp</li>
+            <li>Prepara tus herramientas necesarias</li>
+            <li>Contacta al cliente para confirmar entrada 24h antes</li>
+            <li>Registra el trabajo completado al finalizar</li>
+          </ul>
+        </div>
+
+        <div style="background: #f0f9ff; border-radius: 8px; padding: 16px; margin: 20px 0;">
+          <strong style="display: block; margin-bottom: 8px; color: #0c3a5c; font-size: 15px;">💡 Tips:</strong>
+          <p style="margin: 8px 0; font-size: 14px; color: #183a5b;">Mantén al cliente actualizado sobre tu hora de llegada estimada. Usa el chat en PlomApp para comunicarte directamente.</p>
+        </div>
+      </div>
+      <div style="background:#f7fbff; padding:20px 32px 24px; font-size:13px; color:#6b7b8f; border-top: 1px solid #e0e7ff;">
+        <p style="margin: 0 0 8px; font-weight: 600;">¿Necesitas soporte?</p>
+        <p style="margin: 0; font-size: 14px;">Si tienes preguntas sobre la cita o problemas técnicos, contáctanos.</p>
+        <p style="margin: 12px 0 0; font-size: 13px;">📧 <a href="mailto:plomaap@zohomail.com" style="color:#2f80ed; text-decoration: none;">plomaap@zohomail.com</a></p>
+      </div>
+    </div>
+  </body>
+</html>

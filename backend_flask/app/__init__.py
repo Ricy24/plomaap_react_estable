@@ -14,7 +14,7 @@ def create_app(env='development'):
     """Create Flask application"""
     
     # Initialize Flask app
-    app = Flask(__name__)
+    app = Flask(__name__, template_folder='templates')
     
     # Load configuration
     config_class = config_by_name.get(env, config_by_name['development'])

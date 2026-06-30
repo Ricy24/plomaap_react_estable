@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import get_jwt_identity
 from app.database.models import Appointment, Service, User
@@ -5,6 +7,7 @@ from app.database.extensions import db
 from app.utils.decorators import jwt_required_custom, admin_only
 from app.utils.validators import validate_appointment_status, validate_date_time
 from app.services.appointment_service import find_available_technician, validate_appointment_transition
+from app.utils.email_utils import send_template_email
 
 appointments_bp = Blueprint('appointments', __name__, url_prefix='/api/appointments')
 
@@ -32,7 +35,12 @@ def list_appointments():
         return jsonify({'error': 'Invalid user role'}), 403
     
     if date_filter:
-        query = query.filter(Appointment.date == date_filter)
+        try:
+            parsed_date = datetime.strptime(date_filter, '%Y-%m-%d').date()
+        except (TypeError, ValueError):
+            parsed_date = None
+        if parsed_date:
+            query = query.filter(Appointment.date == parsed_date)
     
     if status_filter:
         query = query.filter(Appointment.status == status_filter)
@@ -86,6 +94,11 @@ def create_appointment():
     # Validate date and time format
     if not validate_date_time(date_value, time_value):
         return jsonify({'success': False, 'message': 'Invalid date or time format'}), 400
+
+    try:
+        appointment_date = datetime.strptime(date_value, '%Y-%m-%d').date()
+    except (TypeError, ValueError):
+        return jsonify({'success': False, 'message': 'Invalid date format'}), 400
     
     # Check service exists
     service = Service.query.get(int(service_id)) if str(service_id).isdigit() else None
@@ -99,20 +112,58 @@ def create_appointment():
     if not technician:
         technician = find_available_technician(date_value, time_value, service.id)
     
-    appointment = Appointment(
-        user_id=user_id,
-        technician_id=technician.id if technician else None,
-        service_id=service.id,
-        date=date_value,
-        time=time_value,
-        status='pending' if not technician else 'scheduled',
-        notes=data.get('notes')
-    )
+    try:
+        appointment = Appointment(
+            user_id=int(user_id),
+            technician_id=technician.id if technician else None,
+            service_id=service.id,
+            date=appointment_date,
+            time=time_value,
+            status='pending' if not technician else 'scheduled',
+            notes=data.get('notes')
+        )
+        
+        db.session.add(appointment)
+        db.session.commit()
+
+        customer = User.query.get(user_id)
+        if customer and customer.email:
+            send_template_email(
+                customer.email,
+                'Cita agendada en PlomApp',
+                'appointment_customer',
+                {
+                    'name': customer.name,
+                    'service_name': service.name,
+                    'appointment_date': appointment_date.strftime('%d/%m/%Y'),
+                    'appointment_time': time_value,
+                    'technician_name': technician.name if technician else 'Por asignar',
+                    'text_body': f'Tu cita para {service.name} fue agendada correctamente.'
+                }
+            )
+
+        if technician and technician.email:
+            send_template_email(
+                technician.email,
+                'Nueva cita asignada en PlomApp',
+                'appointment_technician',
+                {
+                    'name': technician.name,
+                    'service_name': service.name,
+                    'appointment_date': appointment_date.strftime('%d/%m/%Y'),
+                    'appointment_time': time_value,
+                    'customer_name': customer.name if customer else 'Cliente',
+                    'customer_phone': customer.phone if customer and customer.phone else 'No proporcionado',
+                    'customer_address': customer.address if customer and customer.address else 'No proporcionado',
+                    'text_body': f'Tienes una nueva cita para {service.name}.'
+                }
+            )
+        
+        return jsonify({'success': True, 'message': 'Appointment created', 'appointment': appointment.to_dict(enriched=True)}), 201
     
-    db.session.add(appointment)
-    db.session.commit()
-    
-    return jsonify({'success': True, 'message': 'Appointment created', 'appointment': appointment.to_dict(enriched=True)}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': f'Error creating appointment: {str(e)}'}), 400
 
 @appointments_bp.route('/<int:appointment_id>', methods=['PATCH'])
 @jwt_required_custom
@@ -152,7 +203,10 @@ def update_appointment(appointment_id):
             appointment.technician_id = data.get('technician_id') or data.get('technicianId')
         
         if 'date' in data:
-            appointment.date = data['date']
+            try:
+                appointment.date = datetime.strptime(data['date'], '%Y-%m-%d').date()
+            except (TypeError, ValueError):
+                return jsonify({'success': False, 'message': 'Invalid date format'}), 400
         
         if 'time' in data:
             appointment.time = data['time']

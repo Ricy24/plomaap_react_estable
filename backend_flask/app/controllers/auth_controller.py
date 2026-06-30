@@ -1,8 +1,11 @@
+from datetime import datetime
+
 from flask import jsonify, request
 from app.database.models import User, TechnicianProfile
 from app.database.extensions import db
 from app.utils.validators import validate_email, validate_password, validate_name
 from app.utils.jwt_utils import generate_token
+from app.utils.email_utils import send_template_email
 
 def login():
     """Handle user login"""
@@ -20,6 +23,16 @@ def login():
         return jsonify({'success': False, 'message': 'Account is not active'}), 401
     
     token = generate_token(user.id)
+    send_template_email(
+        user.email,
+        'Inicio de sesión en PlomApp',
+        'login_alert',
+        {
+            'name': user.name,
+            'login_time': datetime.utcnow().strftime('%d/%m/%Y %H:%M'),
+            'text_body': 'Se ha iniciado sesión en tu cuenta de PlomApp.'
+        }
+    )
     return jsonify({
         'success': True,
         'message': 'Inicio de sesión correcto',
@@ -73,6 +86,16 @@ def register():
     db.session.commit()
     
     token = generate_token(user.id)
+    send_template_email(
+        user.email,
+        'Bienvenido a PlomApp',
+        'welcome',
+        {
+            'name': user.name,
+            'role_label': 'Cliente' if user.role == 'customer' else 'Técnico' if user.role == 'technician' else 'Administrador',
+            'text_body': 'Gracias por registrarte en PlomApp.'
+        }
+    )
     return jsonify({
         'success': True,
         'message': 'Registro exitoso',

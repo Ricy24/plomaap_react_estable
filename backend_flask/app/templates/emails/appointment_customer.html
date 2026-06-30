@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>✓ Tu cita está confirmada</title>
+  </head>
+  <body style="margin:0; padding:0; background:#f3f8ff; font-family:'Segoe UI', Arial, sans-serif; color:#183a5b;">
+    <div style="max-width:640px; margin:24px auto; background:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 8px 30px rgba(31, 97, 165, 0.12);">
+      <div style="background:linear-gradient(90deg, #10b981 0%, #059669 100%); padding:32px; color:#ffffff;">
+        <div style="font-size: 28px; margin-bottom: 8px;">✅</div>
+        <h1 style="margin:0; font-size:28px; font-weight:bold;">Tu cita está confirmada</h1>
+        <p style="margin:12px 0 0; opacity:0.95; font-size:15px;">Hemos agendado tu servicio exitosamente</p>
+      </div>
+      <div style="padding:32px;">
+        <p style="margin:0 0 16px; font-size:16px; font-weight:bold;">¡Hola {{ name }}!</p>
+        <p style="margin:0 0 24px; line-height:1.8; font-size:15px;">Tu cita de servicio ha sido confirmada. Un técnico especializado estará en tu domicilio en la fecha y hora indicada.</p>
+        
+        <div style="background: #f0f9ff; border-radius: 8px; padding: 18px; margin: 20px 0; border-left: 4px solid #2f80ed;">
+          <strong style="display: block; margin-bottom: 12px; font-size: 16px; color: #0c3a5c;">📋 Detalles de tu cita:</strong>
+          <table style="width: 100%; font-size: 15px; line-height: 1.8;">
+            <tr>
+              <td style="padding: 6px 0; color: #666;"><strong>Servicio:</strong></td>
+              <td style="padding: 6px 0; text-align: right; color: #183a5b;">{{ service_name }}</td>
+            </tr>
+            <tr style="border-top: 1px solid #e0e7ff;">
+              <td style="padding: 6px 0; color: #666;"><strong>📅 Fecha:</strong></td>
+              <td style="padding: 6px 0; text-align: right; font-weight: bold; color: #183a5b;">{{ appointment_date }}</td>
+            </tr>
+            <tr style="border-top: 1px solid #e0e7ff;">
+              <td style="padding: 6px 0; color: #666;"><strong>⏰ Hora:</strong></td>
+              <td style="padding: 6px 0; text-align: right; font-weight: bold; color: #183a5b;">{{ appointment_time }}</td>
+            </tr>
+            <tr style="border-top: 1px solid #e0e7ff;">
+              <td style="padding: 6px 0; color: #666;"><strong>👨‍🔧 Técnico:</strong></td>
+              <td style="padding: 6px 0; text-align: right; color: #183a5b;">{{ technician_name }}</td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="background: #fffbeb; border-radius: 8px; padding: 14px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+          <strong style="display: block; margin-bottom: 8px; color: #92400e; font-size: 15px;">💡 Preparándote para la visita:</strong>
+          <ul style="margin: 8px 0; padding-left: 20px; font-size: 14px; color: #78350f; line-height: 1.8;">
+            <li>Asegúrate de estar en casa a la hora acordada</li>
+            <li>Ten acceso al área donde se realizará el trabajo</li>
+            <li>Prepara un espacio limpio para el técnico</li>
+            <li>Recibiras recordatorio 24 horas antes</li>
+          </ul>
+        </div>
+
+        <div style="background: #ecfdf5; border-radius: 8px; padding: 16px; margin: 20px 0;">
+          <strong style="display: block; margin-bottom: 8px; color: #065f46; font-size: 15px;">📱 Mantente conectado:</strong>
+          <p style="margin: 8px 0; font-size: 14px; color: #047857;">Puedes ver detalles de tu cita, chat con el técnico y recibir actualizaciones en tu cuenta de PlomApp.</p>
+        </div>
+      </div>
+      <div style="background:#f7fbff; padding:20px 32px 24px; font-size:13px; color:#6b7b8f; border-top: 1px solid #e0e7ff;">
+        <p style="margin: 0 0 8px; font-weight: 600;">¿Necesitas cambiar algo?</p>
+        <p style="margin: 0; font-size: 14px;">Si necesitas reagendar o cancelar, puedes hacerlo desde tu dashboard de PlomApp o contactándonos directamente.</p>
+        <p style="margin: 12px 0 0; font-size: 13px;">📧 <a href="mailto:plomaap@zohomail.com" style="color:#2f80ed; text-decoration: none;">plomaap@zohomail.com</a></p>
+      </div>
+    </div>
+  </body>
+</html>

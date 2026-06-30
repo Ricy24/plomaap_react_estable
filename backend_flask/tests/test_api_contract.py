@@ -70,6 +70,26 @@ class ApiContractTests(unittest.TestCase):
         self.assertIn('appointment', payload)
         self.assertEqual(payload['appointment']['service_id'], service.id)
 
+    def test_slots_endpoint_returns_available_slots_for_technician(self):
+        with self.app.app_context():
+            from app.database.models import User, TechnicianProfile
+            from app.database.extensions import db
+
+            technician = User(name='Slot Tech', email='slot-tech@example.com', role='technician')
+            technician.set_password('Password123!')
+            db.session.add(technician)
+            db.session.flush()
+            db.session.add(TechnicianProfile(user_id=technician.id, schedule={'mon': [[9, 17]]}, available=True))
+            db.session.commit()
+            technician_id = technician.id
+
+        response = self.client.get(f'/api/technicians/slots?date=2026-07-06&technician_id={technician_id}')
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.get_json()
+        self.assertIn('slots', payload)
+        self.assertTrue(payload['slots'])
+
 
 if __name__ == '__main__':
     unittest.main()

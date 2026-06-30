@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>¡Bienvenido a PlomApp!</title>
+    <style>
+      .feature-box { display: inline-block; background: #f0f9ff; border-radius: 8px; padding: 12px 16px; margin: 6px 4px; font-size: 14px; color: #0c3a5c; }
+      .cta-button { display: inline-block; background: linear-gradient(90deg, #5aa9ff 0%, #2f80ed 100%); color: white; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: bold; margin-top: 16px; }
+      .info-section { background: #f7fbff; border-radius: 8px; padding: 16px; margin: 16px 0; border-left: 4px solid #2f80ed; }
+    </style>
+  </head>
+  <body style="margin:0; padding:0; background:#f3f8ff; font-family:'Segoe UI', Arial, sans-serif; color:#183a5b;">
+    <div style="max-width:640px; margin:24px auto; background:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 8px 30px rgba(31, 97, 165, 0.12);">
+      <div style="background:linear-gradient(90deg, #5aa9ff 0%, #2f80ed 100%); padding:32px; color:#ffffff;">
+        <div style="font-size: 28px; margin-bottom: 8px;">🎉</div>
+        <h1 style="margin:0; font-size:28px; font-weight:bold;">¡Bienvenido a PlomApp!</h1>
+        <p style="margin:12px 0 0; opacity:0.95; font-size:16px;">Tu cuenta está activada y lista para usar.</p>
+      </div>
+      <div style="padding:32px;">
+        <p style="margin:0 0 16px; font-size:16px; font-weight:bold;">¡Hola {{ name }}!</p>
+        <p style="margin:0 0 20px; line-height:1.8; font-size:15px;">Gracias por unirte a PlomApp. Nos complace serte de ayuda en tus necesidades de servicios de plomería. Tu cuenta ya está lista para comenzar.</p>
+        
+        <div class="info-section">
+          <strong style="font-size: 16px; display: block; margin-bottom: 12px;">📋 Tu tipo de cuenta:</strong>
+          <p style="margin: 8px 0; font-size: 15px;"><strong>{{ role_label }}</strong></p>
+          {% if role == 'customer' %}
+          <p style="margin: 8px 0; font-size: 14px; color: #555;">Acceso completo para agendar servicios y gestionar tus citas.</p>
+          {% elif role == 'technician' %}
+          <p style="margin: 8px 0; font-size: 14px; color: #555;">Acceso de técnico para gestionar tu agenda y citas asignadas.</p>
+          {% elif role == 'admin' %}
+          <p style="margin: 8px 0; font-size: 14px; color: #555;">Acceso administrativo completo al sistema.</p>
+          {% endif %}
+        </div>
+
+        <div style="background: #f0f9ff; border-radius: 8px; padding: 16px; margin: 20px 0;">
+          <strong style="display: block; margin-bottom: 12px; font-size: 15px;">✨ Lo que puedes hacer ahora:</strong>
+          <div class="feature-box">📅 Agendar citas</div>
+          <div class="feature-box">🔔 Recibir notificaciones</div>
+          <div class="feature-box">👤 Gestionar perfil</div>
+          <div class="feature-box">💬 Comunicar con técnicos</div>
+        </div>
+
+        <p style="margin: 20px 0 16px; line-height: 1.8; font-size: 15px;"><strong>Próximos pasos:</strong></p>
+        <ul style="margin: 0; padding-left: 20px; font-size: 15px; line-height: 1.8;">
+          <li>Completa tu perfil con información de contacto</li>
+          <li>Explora los servicios disponibles</li>
+          <li>Descarga la app en tu teléfono (disponible próximamente)</li>
+        </ul>
+
+        <div style="text-align: center; margin-top: 28px;">
+          <a href="https://plomaapp.com" class="cta-button" style="color: white; text-decoration: none; display: inline-block;">Ir a mi cuenta →</a>
+        </div>
+      </div>
+      <div style="background:#f7fbff; padding:20px 32px 24px; font-size:13px; color:#6b7b8f; border-top: 1px solid #e0e7ff;">
+        <p style="margin: 0 0 8px; font-weight: 600;">¿Necesitas ayuda?</p>
+        <p style="margin: 0;">📧 Contáctanos: <a href="mailto:plomaap@zohomail.com" style="color:#2f80ed; text-decoration: none;">plomaap@zohomail.com</a></p>
+        <p style="margin: 8px 0 0; opacity: 0.8;">PlomApp — Soluciones rápidas y confiables en plomería</p>
+      </div>
+    </div>
+  </body>
+</html>

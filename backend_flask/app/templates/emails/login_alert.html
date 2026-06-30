@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notificación de seguridad - PlomApp</title>
+  </head>
+  <body style="margin:0; padding:0; background:#f3f8ff; font-family:'Segoe UI', Arial, sans-serif; color:#183a5b;">
+    <div style="max-width:640px; margin:24px auto; background:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 8px 30px rgba(31, 97, 165, 0.12);">
+      <div style="background:linear-gradient(90deg, #5aa9ff 0%, #2f80ed 100%); padding:32px; color:#ffffff;">
+        <div style="font-size: 28px; margin-bottom: 8px;">🔒</div>
+        <h1 style="margin:0; font-size:26px; font-weight:bold;">Notificación de seguridad</h1>
+        <p style="margin:12px 0 0; opacity:0.95; font-size:15px;">Se detectó acceso a tu cuenta</p>
+      </div>
+      <div style="padding:32px;">
+        <p style="margin:0 0 12px; font-size:16px; font-weight:bold;">Hola {{ name }},</p>
+        <p style="margin:0 0 20px; line-height:1.8; font-size:15px;">Hemos registrado un nuevo acceso a tu cuenta de PlomApp. Por seguridad, te notificamos los detalles:</p>
+        
+        <div style="background: #f0f9ff; border-radius: 8px; padding: 16px; margin: 20px 0; border-left: 4px solid #2f80ed;">
+          <table style="width: 100%; font-size: 14px;">
+            <tr>
+              <td style="padding: 8px 0; color: #666;"><strong>📅 Fecha y hora:</strong></td>
+              <td style="padding: 8px 0; text-align: right; font-weight: bold; color: #183a5b;">{{ login_time }}</td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; color: #666;"><strong>✓ Estado:</strong></td>
+              <td style="padding: 8px 0; text-align: right; color: #22c55e; font-weight: bold;">Acceso exitoso</td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="background: #fffbeb; border-radius: 8px; padding: 14px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+          <strong style="display: block; margin-bottom: 8px; color: #92400e;">⚠️ Importante:</strong>
+          <p style="margin: 8px 0; font-size: 14px; color: #78350f; line-height: 1.6;"><strong>¿No reconoces este acceso?</strong><br/>Si no fuiste tú quien inició sesión, cambia tu contraseña inmediatamente en tu cuenta.</p>
+        </div>
+
+        <div style="background: #f0f9ff; border-radius: 8px; padding: 16px; margin: 20px 0;">
+          <strong style="display: block; margin-bottom: 12px; font-size: 15px;">🛡️ Consejos de seguridad:</strong>
+          <ul style="margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.8;">
+            <li>Usa una contraseña única y fuerte</li>
+            <li>Nunca compartas tu contraseña con otros</li>
+            <li>Cierra sesión después de usar dispositivos públicos</li>
+            <li>Habilita la verificación de dos factores (próximamente)</li>
+          </ul>
+        </div>
+      </div>
+      <div style="background:#f7fbff; padding:20px 32px 24px; font-size:13px; color:#6b7b8f; border-top: 1px solid #e0e7ff;">
+        <p style="margin: 0 0 8px; font-weight: 600;">¿Necesitas ayuda?</p>
+        <p style="margin: 0;">📧 Contáctanos: <a href="mailto:plomaap@zohomail.com" style="color:#2f80ed; text-decoration: none;">plomaap@zohomail.com</a></p>
+        <p style="margin: 8px 0 0; opacity: 0.8;">PlomApp — Tu seguridad es nuestra prioridad</p>
+      </div>
+    </div>
+  </body>
+</html>
