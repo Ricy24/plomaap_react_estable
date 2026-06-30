@@ -67,6 +67,7 @@ function getDayKey(dateStr) {
 function enrichAppointment(db, appt) {
   const client = db.users.find(u => u.id === appt.userId)
   const techUser = db.users.find(u => u.id === appt.technicianId)
+  const techProfile = db.technicians.find(t => t.userId === appt.technicianId)
   const service = db.services.find(s => s.id === appt.serviceId)
   return {
     ...appt,
@@ -76,10 +77,61 @@ function enrichAppointment(db, appt) {
     technicianName: techUser?.name || 'Por asignar',
     technicianAvatar: techUser?.avatar || null,
     technicianPhone: techUser?.phone || '',
+    technicianRating: techProfile?.rating ?? null,
+    technicianSpecialties: techProfile?.specialties ?? [],
+    technicianZones: techProfile?.zones ?? [],
+    technicianCompletedJobs: techProfile?.completedJobs ?? 0,
     serviceIcon: service?.icon || 'fa-wrench',
     serviceColor: service?.color || 'pipe',
     dateFormatted: new Date(appt.date + 'T12:00:00').toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' })
   }
+}
+
+function createNotification(db, { userId, type, title, message, appointmentId = null }) {
+  if (!db.notifications) db.notifications = []
+  const notification = {
+    id: Math.max(0, ...db.notifications.map(n => n.id)) + 1,
+    userId,
+    type,
+    title,
+    message,
+    appointmentId,
+    read: false,
+    createdAt: new Date().toISOString()
+  }
+  db.notifications.push(notification)
+  return notification
+}
+
+function notifyAppointmentEvent(db, appt, event) {
+  const enriched = enrichAppointment(db, appt)
+  const events = {
+    created: {
+      client: { title: 'Cita confirmada', message: `Tu cita de ${enriched.serviceName} fue agendada para el ${enriched.dateFormatted} a las ${enriched.time}. Técnico: ${enriched.technicianName}.` },
+      technician: { title: 'Nueva cita asignada', message: `${enriched.clientName} agendó ${enriched.serviceName} para el ${enriched.dateFormatted} a las ${enriched.time}.` }
+    },
+    in_progress: {
+      client: { title: 'Técnico en camino', message: `${enriched.technicianName} inició el servicio de ${enriched.serviceName}.` }
+    },
+    completed: {
+      client: { title: 'Servicio completado', message: `Tu servicio de ${enriched.serviceName} fue completado por ${enriched.technicianName}.` },
+      technician: { title: 'Servicio completado', message: `Completaste ${enriched.serviceName} para ${enriched.clientName}.` }
+    },
+    cancelled: {
+      client: { title: 'Cita cancelada', message: `Tu cita de ${enriched.serviceName} del ${enriched.dateFormatted} fue cancelada.` },
+      technician: { title: 'Cita cancelada', message: `La cita de ${enriched.clientName} (${enriched.serviceName}) fue cancelada.` }
+    },
+    rescheduled: {
+      client: { title: 'Cita reprogramada', message: `Tu cita de ${enriched.serviceName} fue reprogramada para el ${enriched.dateFormatted} a las ${enriched.time}.` },
+      technician: { title: 'Cita reprogramada', message: `${enriched.clientName} reprogramó ${enriched.serviceName} para el ${enriched.dateFormatted} a las ${enriched.time}.` }
+    }
+  }
+
+  const cfg = events[event]
+  if (!cfg) return
+
+  if (cfg.client) createNotification(db, { userId: appt.userId, type: event, appointmentId: appt.id, ...cfg.client })
+  if (cfg.technician) createNotification(db, { userId: appt.technicianId, type: event, appointmentId: appt.id, ...cfg.technician })
 }
 
 function findAvailableTechnician(db, serviceId, date, time) {
@@ -447,6 +499,7 @@ app.patch('/api/technicians/appointments/:id', (req, res) => {
     }
   }
 
+  notifyAppointmentEvent(db, appt, status)
   writeDatabase(db)
   res.json({ success: true, appointment: enrichAppointment(db, appt) })
 })
@@ -526,6 +579,7 @@ app.post('/api/appointments', (req, res) => {
   }
 
   db.appointments.push(newAppt)
+  notifyAppointmentEvent(db, newAppt, 'created')
   writeDatabase(db)
 
   res.status(201).json({
@@ -552,21 +606,26 @@ app.patch('/api/appointments/:id', (req, res) => {
     return res.status(403).json({ success: false, message: 'No tienes acceso a esta cita' })
   }
 
-  // Actualizar estado (técnico)
+  // Actualizar estado
   if (status) {
-    if (user.role !== 'technician') {
-      return res.status(403).json({ success: false, message: 'Solo técnicos pueden cambiar estado' })
-    }
     const validStatuses = ['scheduled', 'in_progress', 'completed', 'cancelled']
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ success: false, message: 'Estado inválido' })
     }
-    appt.status = status
-    if (status === 'completed') {
-      const profile = db.technicians.find(t => t.userId === user.id)
-      if (profile) {
-        profile.completedJobs = (profile.completedJobs || 0) + 1
+
+    if (user.role === 'user') {
+      if (status !== 'cancelled') {
+        return res.status(403).json({ success: false, message: 'Solo puedes cancelar tu cita' })
       }
+      appt.status = status
+      notifyAppointmentEvent(db, appt, 'cancelled')
+    } else if (user.role === 'technician') {
+      appt.status = status
+      if (status === 'completed') {
+        const profile = db.technicians.find(t => t.userId === user.id)
+        if (profile) profile.completedJobs = (profile.completedJobs || 0) + 1
+      }
+      notifyAppointmentEvent(db, appt, status)
     }
   }
 
@@ -575,6 +634,7 @@ app.patch('/api/appointments/:id', (req, res) => {
     appt.date = date
     appt.time = time
     appt.status = 'scheduled'
+    notifyAppointmentEvent(db, appt, 'rescheduled')
   }
 
   // Asignar técnico (cliente o admin)
@@ -584,6 +644,50 @@ app.patch('/api/appointments/:id', (req, res) => {
 
   writeDatabase(db)
   res.json({ success: true, appointment: enrichAppointment(db, appt) })
+})
+
+// ── NOTIFICACIONES ────────────────────────────────
+
+app.get('/api/notifications', (req, res) => {
+  const user = getUserFromToken(req.headers.authorization?.replace('Bearer ', ''))
+  if (!user) return res.status(401).json({ success: false, message: 'Token inválido' })
+
+  const db = readDatabase()
+  const list = (db.notifications || [])
+    .filter(n => n.userId === user.id)
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+
+  res.json({
+    success: true,
+    notifications: list,
+    unreadCount: list.filter(n => !n.read).length
+  })
+})
+
+app.patch('/api/notifications/read-all', (req, res) => {
+  const user = getUserFromToken(req.headers.authorization?.replace('Bearer ', ''))
+  if (!user) return res.status(401).json({ success: false, message: 'Token inválido' })
+
+  const db = readDatabase()
+  ;(db.notifications || []).forEach(n => {
+    if (n.userId === user.id) n.read = true
+  })
+  writeDatabase(db)
+  res.json({ success: true, message: 'Notificaciones marcadas como leídas' })
+})
+
+app.patch('/api/notifications/:id', (req, res) => {
+  const user = getUserFromToken(req.headers.authorization?.replace('Bearer ', ''))
+  if (!user) return res.status(401).json({ success: false, message: 'Token inválido' })
+
+  const db = readDatabase()
+  const notif = (db.notifications || []).find(n => n.id === parseInt(req.params.id))
+  if (!notif) return res.status(404).json({ success: false, message: 'Notificación no encontrada' })
+  if (notif.userId !== user.id) return res.status(403).json({ success: false, message: 'Sin acceso' })
+
+  notif.read = true
+  writeDatabase(db)
+  res.json({ success: true, notification: notif })
 })
 
 // ── ADMIN ─────────────────────────────────────────
