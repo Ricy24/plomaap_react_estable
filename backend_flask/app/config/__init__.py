@@ -4,19 +4,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-SQLITE_DB_PATH = os.path.join(BASE_DIR, 'instance', 'plomapp.sqlite3')
-os.makedirs(os.path.dirname(SQLITE_DB_PATH), exist_ok=True)
-
 
 def get_database_uri():
     database_url = os.getenv('DATABASE_URL')
     if database_url:
         return database_url
-
-    use_sqlite = os.getenv('USE_SQLITE', 'True').lower() in {'1', 'true', 'yes', 'on'}
-    if use_sqlite:
-        return f'sqlite:///{SQLITE_DB_PATH}'
 
     return (
         f"mysql+pymysql://{os.getenv('MYSQL_USER', 'root')}:{os.getenv('MYSQL_PASSWORD', 'password')}@"

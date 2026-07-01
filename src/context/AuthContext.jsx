@@ -5,9 +5,31 @@ import { useSessionTimeout } from '../hooks/useSessionTimeout'
 const AuthContext = createContext(null)
 
 const DASHBOARD_BY_ROLE = {
+  customer: '/cliente',
   user: '/cliente',
   technician: '/tecnico',
   admin: '/admin/panel',
+}
+
+function parseJwtPayload(token) {
+  if (typeof token !== 'string') return null
+  const parts = token.split('.')
+  if (parts.length !== 3) return null
+  try {
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/')
+    const json = decodeURIComponent(atob(base64).split('').map((char) => `%${`00${char.charCodeAt(0).toString(16)}`.slice(-2)}`).join(''))
+    return JSON.parse(json)
+  } catch {
+    return null
+  }
+}
+
+function isValidAuthToken(token) {
+  const payload = parseJwtPayload(token)
+  if (!payload) return false
+  if (typeof payload.sub !== 'string') return false
+  if (payload.exp && Date.now() >= payload.exp * 1000) return false
+  return true
 }
 
 export function AuthProvider({ children }) {
@@ -19,7 +41,8 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const savedUser = localStorage.getItem('user')
     const token = localStorage.getItem('authToken')
-    if (savedUser && token) {
+
+    if (savedUser && token && isValidAuthToken(token)) {
       try {
         const parsed = JSON.parse(savedUser)
         setUser(parsed)
@@ -30,6 +53,8 @@ export function AuthProvider({ children }) {
       } catch (err) {
         console.error('Error al cargar sesión:', err)
       }
+    } else if (token) {
+      localStorage.removeItem('authToken')
     }
     setReady(true)
   }, [])
@@ -50,12 +75,15 @@ export function AuthProvider({ children }) {
     logout()
   })
 
-  const login = useCallback((userData, profile = null) => {
+  const login = useCallback((userData, profile = null, token = null) => {
     setUser(userData)
     localStorage.setItem('user', JSON.stringify(userData))
     localStorage.setItem('userRole', userData.role)
-    if (!localStorage.getItem('authToken')) {
-      localStorage.setItem('authToken', `token_${userData.id}_${Date.now()}`)
+
+    if (token) {
+      localStorage.setItem('authToken', token)
+    } else {
+      localStorage.removeItem('authToken')
     }
 
     if (userData.role === 'technician' && profile) {
@@ -63,7 +91,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem('technicianProfile', JSON.stringify(profile))
     }
 
-    navigate(DASHBOARD_BY_ROLE[userData.role] || '/')
+    navigate(DASHBOARD_BY_ROLE[userData.role] || DASHBOARD_BY_ROLE.customer || '/')
   }, [navigate])
 
   const updateUser = useCallback((updated, profile = null) => {

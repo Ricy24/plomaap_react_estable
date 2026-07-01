@@ -34,8 +34,7 @@ function ClientAuth() {
   const [formData, setFormData] = useState({ ...EMPTY_FORM })
 
   const saveSession = (data) => {
-    localStorage.setItem('authToken', data.token)
-    login(data.user)
+    login(data.user, null, data.token)
   }
 
   const clearFieldError = (name) => {

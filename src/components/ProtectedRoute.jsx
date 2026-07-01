@@ -30,6 +30,10 @@ function ProtectedRoute({ children, allowedRoles }) {
     return <Navigate to={loginPath} state={{ from: location }} replace />
   }
 
+  if (user.role === 'customer' && location.pathname === '/ingresar/cliente') {
+    return <Navigate to='/cliente' replace />
+  }
+
   if (user.status === 'disabled') {
     localStorage.clear()
     return <Navigate to="/ingresar" replace />

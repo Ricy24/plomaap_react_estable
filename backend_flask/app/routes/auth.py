@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import get_jwt_identity, create_access_token
+from flask_jwt_extended import get_jwt_identity
 from app.database.models import User, TechnicianProfile
 from app.database.extensions import db
 from app.utils.decorators import jwt_required_custom
@@ -36,12 +36,22 @@ def google_login():
         user = User.query.filter_by(email=user_email).first()
         
         if not user:
-            return jsonify({'error': 'User not registered in PlomApp'}), 404
+            user = User(
+                name=idinfo.get('name') or user_email.split('@')[0],
+                email=user_email,
+                role='customer',
+                phone=None,
+                address=None,
+                avatar=idinfo.get('picture')
+            )
+            user.set_password(os.getenv('GOOGLE_DEFAULT_PASSWORD', 'GoogleAuth123!'))
+            db.session.add(user)
+            db.session.commit()
             
         if user.status != 'active':
             return jsonify({'error': 'User account is not active'}), 403
             
-        access_token = create_access_token(identity=user.id)
+        access_token = generate_token(user.id)
         
         return jsonify({
             'token': access_token,

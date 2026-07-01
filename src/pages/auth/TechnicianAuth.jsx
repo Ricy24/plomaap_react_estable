@@ -30,8 +30,7 @@ function TechnicianAuth() {
       const data = await authApi.login(formData.email.trim(), formData.password, 'technician')
       if (!data.success) { setError(data.message); return }
 
-      localStorage.setItem('authToken', data.token)
-      login(data.user, data.technicianProfile)
+      login(data.user, data.technicianProfile, data.token)
     } catch (err) {
       setError(err.message || 'Error de conexión. ¿Está el backend en puerto 5000?')
     } finally {

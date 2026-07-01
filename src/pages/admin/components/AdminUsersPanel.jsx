@@ -18,7 +18,7 @@ function AdminUsersPanel({ users, services, currentUserId, onUserUpdated, onUser
     setSaving(true)
     try {
       const data = await adminApi.updateUser(editingUser.id, payload)
-      onUserUpdated?.(data.user)
+      onUserUpdated?.(data?.user || data)
       setEditingUser(null)
     } catch (err) {
       throw err
@@ -31,7 +31,7 @@ function AdminUsersPanel({ users, services, currentUserId, onUserUpdated, onUser
     const newStatus = user.status === 'disabled' ? 'active' : 'disabled'
     try {
       const data = await adminApi.updateUser(user.id, { status: newStatus })
-      onUserUpdated?.(data.user)
+      onUserUpdated?.(data?.user || data)
     } catch (err) {
       alert(err.message)
     }

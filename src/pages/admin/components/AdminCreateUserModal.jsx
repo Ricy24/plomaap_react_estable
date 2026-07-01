@@ -100,7 +100,7 @@ function AdminCreateUserModal({ services, onClose, onCreated }) {
       }
 
       const data = await adminApi.createUser(payload)
-      onCreated?.(data.user)
+      onCreated?.(data?.user || data)
       onClose()
     } catch (err) {
       setErrors({ form: err.message })

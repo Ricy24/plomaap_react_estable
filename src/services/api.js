@@ -1,15 +1,47 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
+function parseJwtPayload(token) {
+  if (typeof token !== 'string') return null
+  const parts = token.split('.')
+  if (parts.length !== 3) return null
+  try {
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/')
+    const json = decodeURIComponent(atob(base64).split('').map((char) => `%${`00${char.charCodeAt(0).toString(16)}`.slice(-2)}`).join(''))
+    return JSON.parse(json)
+  } catch {
+    return null
+  }
+}
+
+function isValidAuthToken(token) {
+  const payload = parseJwtPayload(token)
+  if (!payload) return false
+  if (typeof payload.sub !== 'string') return false
+  if (payload.exp && Date.now() >= payload.exp * 1000) return false
+  return true
+}
+
 export async function apiFetch(path, options = {}) {
-  const token = localStorage.getItem('authToken')
+  let token = localStorage.getItem('authToken')
   const headers = { 'Content-Type': 'application/json', ...options.headers }
+
+  if (token && !isValidAuthToken(token)) {
+    localStorage.removeItem('authToken')
+    token = null
+  }
+
   if (token) headers.Authorization = `Bearer ${token}`
 
   const response = await fetch(`${API_URL}${path}`, { ...options, headers })
-  const data = await response.json()
+  const data = await response.json().catch(() => ({}))
 
   if (!response.ok) {
-    throw new Error(data.message || 'Error en la solicitud')
+    if (response.status === 401 || response.status === 422) {
+      localStorage.removeItem('authToken')
+      localStorage.removeItem('user')
+      localStorage.removeItem('userRole')
+    }
+    throw new Error(data.message || data.error || 'Error en la solicitud')
   }
 
   return data
