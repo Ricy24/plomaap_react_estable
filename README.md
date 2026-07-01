@@ -1,3 +1,7 @@
+# Proyecto plomapp
+
+https://drive.google.com/file/d/1SUNLHGfq4O8-75DAKvXZ-XIPN06FSzqJ/view?usp=drivesdk
+
 # DIAPOSITIVAS
 Formato IEEE https://github.com/Plomaap/Plomaap/blob/main/Formato%20ERS%20PlomApp.docx
 https://canva.link/51tcdw06jat6pi3
