@@ -1,11 +1,11 @@
-# 🏗️ Estructura del Proyecto PlomApp Backend
+# Estructura del Proyecto PlomApp Backend
 
 **Versión:** 2.0 (Refactorizada)  
 **Actualización:** 2026-06-29
 
 ---
 
-## 📂 Árbol de Directorios
+## Árbol de Directorios
 
 ```
 backend_flask/
@@ -63,7 +63,7 @@ backend_flask/
 
 ---
 
-## 🎯 Descripción de Carpetas
+## Descripción de Carpetas
 
 ### **app/**
 Contiene toda la lógica de la aplicación, organizada en módulos:

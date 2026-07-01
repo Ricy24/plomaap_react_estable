@@ -2,9 +2,9 @@
 
 Backend completamente modular para PlomApp, una aplicación de gestión de citas para servicios de plomería.
 
-**Versión:** 2.0 (Estructura Modular) | **Estado:** ✅ 100% Implementado
+**Versión:** 2.0 (Estructura Modular) | **Estado:** 100% Implementado
 
-## 🚀 Inicio Rápido
+## Inicio Rápido
 
 ### 1. Setup (5 minutos)
 ```bash
@@ -32,18 +32,18 @@ python run.py
 
 **Servidor en:** `http://localhost:5000`
 
-## 📖 Documentación
+## Documentación
 
 | Documento | Propósito |
-|-----------|-----------|
-| **[STRUCTURE.md](./STRUCTURE.md)** | 📂 Descripción detallada de estructura (LEER PRIMERO) |
-| **[INSTALL_QUICK.md](./INSTALL_QUICK.md)** | 🚀 Guía de instalación paso a paso |
-| **[QUICK_REFERENCE.md](./QUICK_REFERENCE.md)** | ⚡ Referencia rápida de endpoints |
-| **[BACKEND_DESIGN.md](./BACKEND_DESIGN.md)** | 📋 Especificación técnica completa |
-| **[ARCHITECTURE_FLOWS.md](./ARCHITECTURE_FLOWS.md)** | 🔄 Diagramas y flujos |
-| **[MIGRATION.md](./MIGRATION.md)** | 🔄 Cambios v1 → v2 |
+|-----------|----------|
+| **[STRUCTURE.md](./STRUCTURE.md)** | Descripción detallada de estructura (LEER PRIMERO) |
+| **[INSTALL_QUICK.md](./INSTALL_QUICK.md)** | Guía de instalación paso a paso |
+| **[QUICK_REFERENCE.md](./QUICK_REFERENCE.md)** | Referencia rápida de endpoints |
+| **[BACKEND_DESIGN.md](./BACKEND_DESIGN.md)** | Especificación técnica completa |
+| **[ARCHITECTURE_FLOWS.md](./ARCHITECTURE_FLOWS.md)** | Diagramas y flujos |
+| **[MIGRATION.md](./MIGRATION.md)** | Cambios v1 → v2 |
 
-## 🎯 Descripción General
+## Descripción General
 
 **PlomApp Backend** es una API REST profesional y escalable construida con:
 - **Framework:** Flask 2.3.0
@@ -53,14 +53,14 @@ python run.py
 - **Migraciones:** Flask-Migrate
 
 ### Características
-- ✅ **24 endpoints REST** funcionales
-- ✅ Autenticación JWT con roles (customer, technician, admin)
-- ✅ Búsqueda inteligente de técnico disponible
-- ✅ Gestión completa de citas
-- ✅ Dashboard administrativo
-- ✅ 5 modelos SQLAlchemy con relaciones
-- ✅ Validación y error handling centralizados
-- ✅ CORS para React/Vite
+- **24 endpoints REST** funcionales
+- Autenticación JWT con roles (customer, technician, admin)
+- Búsqueda inteligente de técnico disponible
+- Gestión completa de citas
+- Dashboard administrativo
+- 5 modelos SQLAlchemy con relaciones
+- Validación y error handling centralizados
+- CORS para React/Vite
 
 ## 🗂️ Estructura del Proyecto (v2.0)
 
@@ -97,7 +97,7 @@ backend_flask/
 │   ├── admin.py                  # Endpoints administrativos
 │   └── health.py                 # Endpoint de salud
 ├── utils/
-## ✨ Endpoints (24 Total)
+## Endpoints (24 Total)
 
 ### Autenticación (6)
 - `POST /api/auth/login`
@@ -135,7 +135,7 @@ backend_flask/
 ### Salud (1)
 - `GET /api/health`
 
-## 📊 Estadísticas
+## Estadísticas
 
 ```
 Modelos:        5 (User, TechnicianProfile, Service, Appointment, Device)
@@ -146,17 +146,17 @@ Decoradores:    4 (JWT, admin, technician, customer)
 Validadores:    7 (email, password, phone, name, date, role, status)
 ```
 
-## 🔒 Seguridad Implementada
+## Seguridad Implementada
 
-- ✅ JWT con expiración (24 horas por defecto)
-- ✅ Contraseñas bcrypted (12 rounds)
-- ✅ CORS configurado
-- ✅ Validación de entrada
-- ✅ Control de acceso por roles
-- ✅ Manejadores de error seguros
-- ✅ SQLAlchemy ORM (protección SQL injection)
+- JWT con expiración (24 horas por defecto)
+- Contraseñas bcrypted (12 rounds)
+- CORS configurado
+- Validación de entrada
+- Control de acceso por roles
+- Manejadores de error seguros
+- SQLAlchemy ORM (protección SQL injection)
 
-## 🔄 Patrones de Diseño
+## Patrones de Diseño
 
 - **Factory Pattern**: Creación de app con `create_app(env)`
 - **Blueprint Pattern**: Organización de rutas modulares
@@ -164,7 +164,7 @@ Validadores:    7 (email, password, phone, name, date, role, status)
 - **Service Layer**: Lógica de negocio separada
 - **Controller Pattern**: Controladores para lógica centralizada
 
-## 📥 Instalación Rápida (10 minutos)
+## Instalación Rápida (10 minutos)
 
 ### Paso 1: MySQL
 ```sql

@@ -1,10 +1,10 @@
-# 📚 Documentación - PlomApp Backend
+# Documentación - PlomApp Backend
 
 **Índice completo de documentación del backend Flask.**
 
 ---
 
-## 🚀 Para Empezar (Haz esto primero)
+## Para Empezar (Haz esto primero)
 
 | Documento | Lectura | Propósito |
 |-----------|---------|-----------|
@@ -13,7 +13,7 @@
 
 ---
 
-## 📖 Documentación Principal
+## Documentación Principal
 
 ### Conceptos y Diseño
 - **[STRUCTURE.md](STRUCTURE.md)** - Estructura modular del backend
@@ -53,7 +53,7 @@
 
 ---
 
-## 📊 Información del Proyecto
+## Información del Proyecto
 
 - **[BUILD_COMPLETE.md](BUILD_COMPLETE.md)** - Resumen de implementación
   - Estadísticas de código
@@ -67,7 +67,7 @@
 
 ---
 
-## 🔨 Documentación Técnica Adicional
+## Documentación Técnica Adicional
 
 - **[IMPLEMENTATION_SKELETON.md](IMPLEMENTATION_SKELETON.md)** - Esquemas de implementación
   - Estructura de código
@@ -76,7 +76,7 @@
 
 ---
 
-## 🎯 Flujo de Lectura Recomendado
+## Flujo de Lectura Recomendado
 
 ### **Para Nuevos en el Proyecto:**
 1. Lee **README.md** (raíz) - Visión general

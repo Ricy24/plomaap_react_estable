@@ -1,6 +1,6 @@
 # PlomApp Backend - Guía Rápida de Referencia
 
-## 📋 Checklist de Archivos a Crear
+## Checklist de Archivos a Crear
 
 - [ ] `app.py` - Aplicación principal
 - [ ] `config.py` - Configuración centralizada
@@ -20,7 +20,7 @@
 - [ ] `utils/decorators.py` - Decoradores personalizados
 - [ ] `migrations/` - Migraciones (generadas por Flask-Migrate)
 
-## 🗄️ Modelos Principales
+## Modelos Principales
 
 ### User
 ```
@@ -52,7 +52,7 @@ notes, created_at, updated_at
 id, user_id (FK), user_agent, registered_at, last_access
 ```
 
-## 🔐 Autenticación
+## Autenticación
 
 **Flujo:**
 1. Usuario envía email + password a `POST /api/auth/login`
@@ -68,7 +68,7 @@ id, user_id (FK), user_agent, registered_at, last_access
 - `@technician_only()` - Solo técnico
 - `@customer_only()` - Solo cliente
 
-## 📍 Endpoints por Categoría
+## Endpoints por Categoría
 
 ### Auth (8 endpoints)
 - POST /api/auth/login
@@ -140,7 +140,7 @@ id, user_id (FK), user_agent, registered_at, last_access
 - Token expirado → 401
 - Usuario eliminado → 401
 
-## 🔑 Variables de Entorno (`.env`)
+## Variables de Entorno (`.env`)
 
 ```env
 FLASK_ENV=development
@@ -156,7 +156,7 @@ CORS_ORIGINS=http://localhost:3000,http://localhost:5173
 DEBUG=True
 ```
 
-## 🗄️ Setup MySQL
+## Setup MySQL
 
 ```sql
 CREATE DATABASE IF NOT EXISTS plomapp 
@@ -169,7 +169,7 @@ GRANT ALL PRIVILEGES ON plomapp.* TO 'plomapp_user'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-## 🚀 Comandos de Desarrollo
+## Comandos de Desarrollo
 
 ```bash
 # Setup inicial
@@ -196,7 +196,7 @@ curl -X POST http://localhost:5000/api/auth/login \
   -d '{"email":"user@example.com","password":"pass"}'
 ```
 
-## 📊 Estructura de Respuestas
+## Estructura de Respuestas
 
 **Exitoso (200, 201):**
 ```json
@@ -225,7 +225,7 @@ curl -X POST http://localhost:5000/api/auth/login \
 }
 ```
 
-## ⚠️ Validaciones Críticas
+## Validaciones Críticas
 
 - Email único y válido (regex)
 - Contraseña mínimo 8 caracteres
@@ -235,17 +235,17 @@ curl -X POST http://localhost:5000/api/auth/login \
 - Status válido (active|inactive|suspended)
 - Appointment status válido (pending|scheduled|in_progress|completed|cancelled)
 
-## 🔒 Seguridad
+## Seguridad
 
-✅ Contraseñas con bcrypt (12+ rounds)
-✅ JWT validado en cada endpoint
-✅ CORS configurado
-✅ Validación de entrada
-✅ Role-based access control
-✅ Variables sensibles en .env
-✅ Manejo seguro de errores (sin info sensible)
+- Contraseñas con bcrypt (12+ rounds)
+- JWT validado en cada endpoint
+- CORS configurado
+- Validación de entrada
+- Role-based access control
+- Variables sensibles en .env
+- Manejo seguro de errores (sin info sensible)
 
-## 📝 Notas Importantes
+## Notas Importantes
 
 1. **Frontend espera API exacta** - No cambiar rutas
 2. **Token en localStorage** - Cliente responsable de almacenamiento
@@ -254,7 +254,7 @@ curl -X POST http://localhost:5000/api/auth/login \
 5. **Logs de seguridad** - Registrar login fallidos, cambios de rol
 6. **Expiración JWT** - 24 horas por defecto, configurable
 
-## 🔗 Compatibilidad Frontend
+## Compatibilidad Frontend
 
 El frontend está configurado para consumir esta API exactamente desde `src/services/api.js`:
 - Base URL: `http://localhost:5000`

@@ -11,7 +11,7 @@ El backend Flask está 100% construido y listo para ejecutarse.
 - pip
 - Git (opcional)
 
-## 🚀 Instalación Paso a Paso (Windows PowerShell)
+## Instalación Paso a Paso (Windows PowerShell)
 
 ### 1. Preparar Base de Datos
 

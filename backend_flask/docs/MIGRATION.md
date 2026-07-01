@@ -1,7 +1,7 @@
-# 🔄 Migración a Nueva Estructura
+# Migración a Nueva Estructura
 
 **Fecha:** 2026-06-29  
-**Status:** ✅ Completado
+**Status:** Completado
 
 ---
 
@@ -9,7 +9,7 @@
 
 Se ha refactorizado el backend Flask de una estructura plana a una estructura modular y escalable.
 
-### **Antes: Estructura Plana** ❌
+### **Antes: Estructura Plana**
 ```
 backend_flask/
 ├── app.py             ← Toda la app en un archivo
@@ -29,7 +29,7 @@ backend_flask/
     └── jwt_utils.py
 ```
 
-### **Ahora: Estructura Modular** ✅
+### **Ahora: Estructura Modular**
 ```
 backend_flask/
 ├── run.py             ← Punto de entrada único
@@ -55,12 +55,12 @@ backend_flask/
 
 | Anterior | Nuevo | Cambios |
 |----------|-------|---------|
-| `config.py` | `app/config/__init__.py` | ✅ Igual |
-| `extensions.py` | `app/database/extensions.py` | ✅ Igual |
-| `models.py` | `app/database/models.py` | ✅ Igual (imports actualizados) |
-| `app.py` | `app/__init__.py` | ✅ Refactorizado con factory |
-| `routes/*` | `app/routes/*` | ✅ Igual |
-| `utils/*` | `app/utils/*` | ✅ Igual |
+| `config.py` | `app/config/__init__.py` | Igual |
+| `extensions.py` | `app/database/extensions.py` | Igual |
+| `models.py` | `app/database/models.py` | Igual (imports actualizados) |
+| `app.py` | `app/__init__.py` | Refactorizado con factory |
+| `routes/*` | `app/routes/*` | Igual |
+| `utils/*` | `app/utils/*` | Igual |
 
 ### **Nuevos Archivos**
 
@@ -89,12 +89,12 @@ FLASK_PORT=5000
 Si tenías código que importaba directamente de los archivos antiguos:
 
 ```python
-# ❌ ANTES (NO FUNCIONA)
+# ANTES (NO FUNCIONA)
 from extensions import db, jwt
 from models import User
 from config import DevelopmentConfig
 
-# ✅ AHORA (CORRECTO)
+# AHORA (CORRECTO)
 from app.database.extensions import db, jwt
 from app.database.models import User
 from app.config import DevelopmentConfig
@@ -116,7 +116,7 @@ del routes/        # Carpeta completa
 del utils/         # Carpeta completa
 ```
 
-**⚠️ IMPORTANTE:** Solo elimina después de verificar que `python run.py` funciona correctamente.
+**IMPORTANTE:** Solo elimina después de verificar que `python run.py` funciona correctamente.
 
 ---
 

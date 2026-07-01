@@ -2,11 +2,11 @@
 
 Backend modular y escalable para PlomApp (gestión de citas de plomería).
 
-**Versión:** 2.0 | **Estado:** ✅ 100% Implementado
+**Versión:** 2.0 | **Estado:** 100% Implementado
 
 ---
 
-## 🚀 Inicio Rápido
+## Inicio Rápido
 
 ```bash
 # 1. Crear BD MySQL
@@ -45,7 +45,7 @@ backend_flask/
 │   ├── middlewares/       # Error handlers
 │   ├── services/          # Servicios
 │   └── utils/             # Decoradores, validators
-├── docs/                  # 📚 Documentación
+├── docs/                  # Documentación
 ├── requirements.txt
 ├── .env.example
 └── .gitignore
@@ -53,30 +53,30 @@ backend_flask/
 
 ---
 
-## 📚 Documentación
+## Documentación
 
 Todo está en la carpeta **`docs/`**:
 
 | Archivo | Descripción |
 |---------|------------|
-| **[docs/STRUCTURE.md](docs/STRUCTURE.md)** | 📂 Estructura del proyecto |
-| **[docs/INSTALL_QUICK.md](docs/INSTALL_QUICK.md)** | 🚀 Guía de instalación |
-| **[docs/QUICK_REFERENCE.md](docs/QUICK_REFERENCE.md)** | ⚡ Referencia de endpoints |
-| **[docs/BACKEND_DESIGN.md](docs/BACKEND_DESIGN.md)** | 📋 Especificación completa |
-| **[docs/ARCHITECTURE_FLOWS.md](docs/ARCHITECTURE_FLOWS.md)** | 🔄 Diagramas y flujos |
-| **[docs/MIGRATION.md](docs/MIGRATION.md)** | 🔄 Cambios v1 → v2 |
+| **[docs/STRUCTURE.md](docs/STRUCTURE.md)** | Estructura del proyecto |
+| **[docs/INSTALL_QUICK.md](docs/INSTALL_QUICK.md)** | Guía de instalación |
+| **[docs/QUICK_REFERENCE.md](docs/QUICK_REFERENCE.md)** | Referencia de endpoints |
+| **[docs/BACKEND_DESIGN.md](docs/BACKEND_DESIGN.md)** | Especificación completa |
+| **[docs/ARCHITECTURE_FLOWS.md](docs/ARCHITECTURE_FLOWS.md)** | Diagramas y flujos |
+| **[docs/MIGRATION.md](docs/MIGRATION.md)** | Cambios v1 → v2 |
 
 ---
 
-## ✨ Características
+## Características
 
-- ✅ **24 endpoints REST** funcionales
-- ✅ Autenticación JWT + bcrypt
-- ✅ 5 modelos SQLAlchemy
-- ✅ Control de acceso por roles
-- ✅ Dashboard administrativo
-- ✅ Búsqueda inteligente de técnico
-- ✅ Validación de entrada centralizada
+- **24 endpoints REST** funcionales
+- Autenticación JWT + bcrypt
+- 5 modelos SQLAlchemy
+- Control de acceso por roles
+- Dashboard administrativo
+- Búsqueda inteligente de técnico
+- Validación de entrada centralizada
 
 ---
 
