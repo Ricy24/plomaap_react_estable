@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { GoogleLogin } from '@react-oauth/google'
 import { authApi } from '../../services/api'
+import { env } from '../../config/env'
 import { useAuth } from '../../context/AuthContext'
 import { uploadImageToCloudinary } from '../../utils/cloudinary'
 import {
@@ -345,7 +346,7 @@ function ClientAuth() {
                 </button>
               </form>
 
-              {isLogin && (
+              {isLogin && env.googleClientId && (
                 <>
                   <div className="auth-divider"><span>O continúa con</span></div>
                   <div className="social-auth">
@@ -365,10 +366,12 @@ function ClientAuth() {
                 </button>
               </p>
 
-              <div className="tech-demo-hint">
-                <p><i className="fa-solid fa-circle-info" /> Casos de prueba (CP06):</p>
-                <p>cliente@mail.com · Contraseña: <strong>Cl@ve123*</strong></p>
-              </div>
+              {import.meta.env.DEV && (
+                <div className="tech-demo-hint">
+                  <p><i className="fa-solid fa-circle-info" /> Casos de prueba (CP06):</p>
+                  <p>cliente@mail.com · Contraseña: <strong>Cl@ve123*</strong></p>
+                </div>
+              )}
             </div>
           </div>
 
