@@ -1,21 +1,26 @@
 {
-  "name": "plomaap--",
+  "name": "plomaap-frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "PlomApp - interfaz web para la gestión de servicios de plomería",
   "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint .",
     "preview": "vite preview",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "npm run test:unit",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
-    "test:e2e": "playwright test --config=e2e/playwright.config.js"
+    "test:e2e": "playwright test --config=e2e/playwright.config.js",
+    "check": "npm run lint && npm run test:unit && npm run build"
   },
   "dependencies": {
     "@react-oauth/google": "^0.12.1",
-    "cloudinary": "^2.10.0",
-    "leaflet": "^1.9.4",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-router-dom": "^7.17.0"
@@ -23,8 +28,6 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.64.1",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
     "eslint": "^10.3.0",
     "eslint-plugin-react-hooks": "^7.1.1",
