@@ -99,10 +99,12 @@ function TechnicianAuth() {
                 </button>
               </form>
 
-              <div className="tech-demo-hint">
-                <p><i className="fa-solid fa-circle-info" /> Casos de prueba (CP07):</p>
-                <p>tecnico@mail.com · Contraseña: <strong>T3cnic0_2026</strong></p>
-              </div>
+              {import.meta.env.DEV && (
+                <div className="tech-demo-hint">
+                  <p><i className="fa-solid fa-circle-info" /> Casos de prueba (CP07):</p>
+                  <p>tecnico@mail.com · Contraseña: <strong>T3cnic0_2026</strong></p>
+                </div>
+              )}
             </div>
           </div>
 

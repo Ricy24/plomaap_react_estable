@@ -41,10 +41,12 @@ function LoginSelector() {
             </button>
           </div>
 
-          <div className="login-selector-hint">
-            <p><strong>CP06 Cliente:</strong> cliente@mail.com / Cl@ve123*</p>
-            <p><strong>CP07 Técnico:</strong> tecnico@mail.com / T3cnic0_2026</p>
-          </div>
+          {import.meta.env.DEV && (
+            <div className="login-selector-hint">
+              <p><strong>CP06 Cliente:</strong> cliente@mail.com / Cl@ve123*</p>
+              <p><strong>CP07 Técnico:</strong> tecnico@mail.com / T3cnic0_2026</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

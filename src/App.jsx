@@ -96,13 +96,19 @@ function AppRoutes() {
 }
 
 function App() {
+  const app = (
+    <BrowserRouter>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </BrowserRouter>
+  )
+
+  if (!env.googleClientId) return app
+
   return (
     <GoogleOAuthProvider clientId={env.googleClientId}>
-      <BrowserRouter>
-        <AuthProvider>
-          <AppRoutes />
-        </AuthProvider>
-      </BrowserRouter>
+      {app}
     </GoogleOAuthProvider>
   )
 }

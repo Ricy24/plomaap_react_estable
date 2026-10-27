@@ -2,6 +2,16 @@
 
 Todas las versiones relevantes de PlomApp Frontend.
 
+## [1.0.1] - 2026-10-27
+
+### Correcciones
+
+- Las credenciales de demostración (CP06/CP07) solo se muestran en desarrollo;
+  ya no aparecen en el build de producción.
+- Google Login se renderiza únicamente cuando `VITE_GOOGLE_CLIENT_ID` está
+  configurado. La aplicación sigue funcionando con correo y contraseña.
+- Se actualizó la versión del paquete y el lockfile.
+
 ## [1.0.0] - 2026-10-27
 
 ### Cambios principales
