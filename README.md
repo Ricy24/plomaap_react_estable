@@ -149,6 +149,12 @@ habilita CORS en el backend.
 Los cambios se integran desde `andres_dev` hacia `production` mediante merge y
 tag de versión.
 
+## Recursos del proyecto
+
+- [Video de presentación](https://drive.google.com/file/d/1SUNLHGfq4O8-75DAKvXZ-XIPN06FSzqJ/view?usp=drivesdk)
+- [Formato ERS PlomApp](https://github.com/Plomaap/Plomaap/blob/main/Formato%20ERS%20PlomApp.docx)
+- [Diapositivas en Canva](https://canva.link/51tcdw06jat6pi3)
+
 ## Seguridad
 
 - No se versionan `.env`, backups, `venv`, `node_modules`, `dist` ni artefactos
