@@ -51,9 +51,6 @@ function Home() {
           <AddressMap 
             address={demoAddress}
             editable={true}
-            onLocationChange={(coords) => {
-              console.log('Ubicación encontrada:', coords)
-            }}
             onAddressChange={setDemoAddress}
           />
         </div>

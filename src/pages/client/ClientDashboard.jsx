@@ -20,35 +20,14 @@ function ClientDashboard({ user, onLogout, onUserUpdate }) {
   const [success, setSuccess] = useState('')
   const [savingProfile, setSavingProfile] = useState(false)
   const [selectedAddress, setSelectedAddress] = useState(user?.address || localStorage.getItem('selectedAddress') || 'Calle 85 # 11-53, Chapinero, Bogotá')
-  const [selectedLocation, setSelectedLocation] = useState(null)
   const [availableTechnicians, setAvailableTechnicians] = useState([])
   const [selectedTechnician, setSelectedTechnician] = useState(null)
-  const [showTechnicianModal, setShowTechnicianModal] = useState(false)
-  const [rescheduleMode, setRescheduleMode] = useState(null)
-  const [selectedAppointment, setSelectedAppointment] = useState(null)
+  const [rescheduleAppointment, setRescheduleAppointment] = useState(null)
 
   const userAddress = selectedAddress
   const firstName = user?.name?.split(' ')[0] || 'Usuario'
   const upcoming = appointments.filter(a => a.status === 'scheduled' || a.status === 'in_progress')
   const completed = appointments.filter(a => a.status === 'completed')
-
-  useEffect(() => { loadData() }, [])
-
-  useEffect(() => {
-    if (selectedService && selectedDate) {
-      techniciansApi.getSlots(selectedDate, selectedService.id)
-        .then(data => setAvailableSlots(data.slots || []))
-        .catch(() => setAvailableSlots([]))
-      
-      techniciansApi.getMyAppointments = appointmentsApi.getTechnicianOptions
-      appointmentsApi.getTechnicianOptions(selectedDate, selectedService.id)
-        .then(data => setAvailableTechnicians(data.technicians || []))
-        .catch(() => setAvailableTechnicians([]))
-      
-      setSelectedTime(null)
-      setSelectedTechnician(null)
-    }
-  }, [selectedService, selectedDate])
 
   const loadData = async () => {
     setLoading(true)
@@ -65,6 +44,27 @@ function ClientDashboard({ user, onLogout, onUserUpdate }) {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    void loadData()
+  }, [])
+
+  useEffect(() => {
+    if (selectedService && selectedDate) {
+      techniciansApi.getSlots(selectedDate, selectedService.id)
+        .then(data => setAvailableSlots(data.slots || []))
+        .catch(() => setAvailableSlots([]))
+
+      appointmentsApi.getTechnicianOptions(selectedDate, selectedService.id)
+        .then(data => setAvailableTechnicians(data.technicians || []))
+        .catch(() => setAvailableTechnicians([]))
+      
+      if (!rescheduleAppointment) {
+        setSelectedTime(null)
+        setSelectedTechnician(null)
+      }
+    }
+  }, [selectedService, selectedDate, rescheduleAppointment])
 
   const handleSaveProfile = async (payload) => {
     setSavingProfile(true)
@@ -84,10 +84,30 @@ function ClientDashboard({ user, onLogout, onUserUpdate }) {
     setError('')
     setSuccess('')
     try {
+      if (rescheduleAppointment) {
+        const data = await appointmentsApi.reschedule(
+          rescheduleAppointment.id,
+          selectedDate,
+          selectedTime
+        )
+        setAppointments(prev =>
+          prev.map(a => (a.id === rescheduleAppointment.id ? data.appointment : a))
+        )
+        setSuccess('Cita reprogramada exitosamente')
+        setRescheduleAppointment(null)
+        setSelectedService(null)
+        setSelectedDate('')
+        setSelectedTime(null)
+        setSelectedTechnician(null)
+        setActiveTab('citas')
+        return
+      }
+
       const payload = {
         serviceId: selectedService.id,
         date: selectedDate,
         time: selectedTime,
+        address: userAddress,
         notes: `Dirección de servicio: ${userAddress}`
       }
       if (selectedTechnician) {
@@ -125,29 +145,15 @@ function ClientDashboard({ user, onLogout, onUserUpdate }) {
   }
 
   const handleRescheduleAppointment = (appointment) => {
-    setSelectedAppointment(appointment)
-    setRescheduleMode(appointment.id)
+    const service =
+      services.find(s => s.id === appointment.serviceId) || appointment.service
+    if (service) setSelectedService(service)
+    setRescheduleAppointment(appointment)
     setSelectedDate(appointment.date)
     setSelectedTime(appointment.time)
-  }
-
-  const handleConfirmReschedule = async () => {
-    if (!selectedAppointment || !selectedDate || !selectedTime) return
-    
-    setBooking(true)
+    setActiveTab('agendar')
     setError('')
     setSuccess('')
-    try {
-      const data = await appointmentsApi.reschedule(selectedAppointment.id, selectedDate, selectedTime)
-      setAppointments(prev => prev.map(a => a.id === selectedAppointment.id ? data.appointment : a))
-      setSuccess('Cita reprogramada exitosamente')
-      setRescheduleMode(null)
-      setSelectedAppointment(null)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setBooking(false)
-    }
   }
 
   const navItems = [
@@ -167,7 +173,7 @@ function ClientDashboard({ user, onLogout, onUserUpdate }) {
   }
 
   return (
-    <div className="dash-layout">
+    <div className="dash-layout" data-testid="client-dashboard">
       <aside className="dash-sidebar">
         <div className="dash-brand"><div className="logo-dot" /><span>PlomApp</span></div>
         <nav className="dash-nav">
@@ -313,10 +319,6 @@ function ClientDashboard({ user, onLogout, onUserUpdate }) {
                   <AddressMap 
                     address={userAddress} 
                     editable={true}
-                    onLocationChange={(coords) => {
-                      setSelectedLocation(coords)
-                      console.log('Ubicación confirmada:', coords)
-                    }}
                     onAddressChange={(newAddress) => {
                       setSelectedAddress(newAddress)
                     }}
@@ -339,10 +341,21 @@ function ClientDashboard({ user, onLogout, onUserUpdate }) {
                         ? <p className="dash-empty-text">No hay horarios disponibles este día. Prueba otra fecha.</p>
                         : (
                           <div className="dash-slots-row">
-                            {availableSlots.map(slot => (
-                              <button key={slot} className={`dash-slot ${selectedTime === slot ? 'selected' : ''}`}
-                                onClick={() => setSelectedTime(slot)}>{slot}</button>
-                            ))}
+                            {availableSlots.map(slot => {
+                              const slotTime = typeof slot === 'string' ? slot : (slot.time || slot.start)
+                              const isAvail = typeof slot === 'string' ? true : (slot.available !== false)
+                              return (
+                                <button
+                                  key={slotTime}
+                                  type="button"
+                                  disabled={!isAvail}
+                                  className={`dash-slot ${selectedTime === slotTime ? 'selected' : ''} ${!isAvail ? 'disabled' : ''}`}
+                                  onClick={() => isAvail && setSelectedTime(slotTime)}
+                                >
+                                  {slotTime}
+                                </button>
+                              )
+                            })}
                           </div>
                         )
                       }
@@ -538,18 +551,6 @@ function AppointmentCard({ appointment: a, onCancel, onReschedule, isUpcoming })
           </button>
         </div>
       )}
-    </div>
-  )
-}
-
-function InfoRow({ icon, label, value }) {
-  return (
-    <div className="dash-info-row">
-      <div className="dash-info-row-icon"><i className={`fa-solid ${icon}`} /></div>
-      <div>
-        <p className="dash-info-label">{label}</p>
-        <p className="dash-info-value">{value}</p>
-      </div>
     </div>
   )
 }

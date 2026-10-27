@@ -7,10 +7,30 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies / build
 node_modules
 dist
 dist-ssr
+coverage
+.vite
 *.local
+
+# Environment (nunca versionar secretos ni configuración local)
+.env
+.env.*
+!.env.example
+
+# Backups / artefactos
+*.bak
+*.bak_*
+.env.backup*
+tmp/
+temp/
+
+# Playwright
+playwright-report
+test-results
+blob-report
 
 # Editor directories and files
 .vscode/*

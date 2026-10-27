@@ -9,9 +9,7 @@ import AdminTodayCard from './components/AdminTodayCard'
 import AdminChart from './components/AdminChart'
 import AdminComposition from './components/AdminComposition'
 import AdminUsersPanel from './components/AdminUsersPanel'
-import AddressMap from '../../components/AddressMap'
 import '../../styles/admin-dashboard.css'
-import '../../styles/address-map.css'
 
 function AdminDashboard({ user, onLogout, onUserUpdate }) {
   const [activeTab, setActiveTab] = useState('dashboard')
@@ -84,7 +82,7 @@ function AdminDashboard({ user, onLogout, onUserUpdate }) {
   }
 
   return (
-    <div className="adm-layout">
+    <div className="adm-layout" data-testid="admin-dashboard">
       <AdminHeader
         user={user}
         activeTab={activeTab}

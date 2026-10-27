@@ -30,9 +30,14 @@ function AdminAuth() {
       const data = await authApi.login(formData.email.trim(), formData.password, 'admin')
       if (!data.success) { setError(data.message); return }
 
+      if (data.user?.role !== 'admin') {
+        setError('Acceso denegado. Esta cuenta no tiene permisos de administrador.')
+        return
+      }
+
       login(data.user, null, data.token)
     } catch (err) {
-      setError(err.message || 'Error de conexión. ¿Está el backend en puerto 5000?')
+      setError(err.message || 'Error de conexión. Verifica que el backend esté disponible.')
     } finally {
       setLoading(false)
     }
@@ -62,7 +67,7 @@ function AdminAuth() {
                   <label>Correo electrónico</label>
                   <div className={`input-wrapper ${fieldErrors.email ? 'has-error' : ''}`}>
                     <i className="fa-regular fa-envelope" />
-                    <input type="email" name="email" placeholder="admin@plomapp.com"
+                    <input type="email" name="email" data-testid="auth-email" placeholder="admin@plomapp.com"
                       value={formData.email}
                       onChange={e => { setFormData({ ...formData, email: e.target.value }); setFieldErrors({}); setError('') }}
                     />
@@ -74,7 +79,7 @@ function AdminAuth() {
                   <label>Contraseña</label>
                   <div className={`input-wrapper ${fieldErrors.password ? 'has-error' : ''}`}>
                     <i className="fa-solid fa-lock" />
-                    <input type="password" name="password" placeholder="••••••••"
+                    <input type="password" name="password" data-testid="auth-password" placeholder="••••••••"
                       value={formData.password}
                       onChange={e => { setFormData({ ...formData, password: e.target.value }); setFieldErrors({}); setError('') }}
                     />
@@ -88,7 +93,7 @@ function AdminAuth() {
 
                 {error && <div className="error-message">{error}</div>}
 
-                <button type="submit" className="btn-auth-submit admin-submit" disabled={loading}>
+                <button type="submit" className="btn-auth-submit admin-submit" data-testid="auth-submit" disabled={loading}>
                   {loading ? 'Verificando...' : 'Iniciar sesión'}
                 </button>
               </form>
