@@ -9,11 +9,12 @@ test.describe('E2E-03 flujo de administrador', () => {
   test('E2E-03 inicio de sesión de administrador y panel', async ({ page }) => {
     await page.goto('/admin')
 
-    await page.locator('input[name="email"]').fill(email)
-    await page.locator('input[name="password"]').fill(password)
-    await page.locator('button[type="submit"]').click()
+    await page.getByTestId('auth-email').fill(email)
+    await page.getByTestId('auth-password').fill(password)
+    await page.getByTestId('auth-submit').click()
 
     await expect(page).toHaveURL(/\/admin\/panel$/)
+    await expect(page.getByTestId('admin-dashboard')).toBeVisible()
     await expect(page.getByRole('button', { name: 'Dashboard' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Usuarios' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Citas' })).toBeVisible()

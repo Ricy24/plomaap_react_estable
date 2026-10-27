@@ -9,11 +9,12 @@ test.describe('E2E-01 flujo de cliente', () => {
   test('E2E-01 inicio de sesión de cliente y dashboard', async ({ page }) => {
     await page.goto('/ingresar/cliente')
 
-    await page.locator('input[name="email"]').fill(email)
-    await page.locator('input[name="password"]').fill(password)
-    await page.locator('button[type="submit"]').click()
+    await page.getByTestId('auth-email').fill(email)
+    await page.getByTestId('auth-password').fill(password)
+    await page.getByTestId('auth-submit').click()
 
     await expect(page).toHaveURL(/\/cliente$/)
+    await expect(page.getByTestId('client-dashboard')).toBeVisible()
     await expect(page.getByRole('heading', { name: /Hola,/ })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Agendar' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Mis citas' })).toBeVisible()
