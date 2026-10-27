@@ -1,4 +1,6 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+import { env } from '../config/env'
+
+const REQUEST_TIMEOUT_MS = 20_000
 
 function parseJwtPayload(token) {
   if (typeof token !== 'string') return null
@@ -21,30 +23,60 @@ function isValidAuthToken(token) {
   return true
 }
 
+function clearSession() {
+  localStorage.removeItem('authToken')
+  localStorage.removeItem('user')
+  localStorage.removeItem('userRole')
+  localStorage.removeItem('technicianProfile')
+}
+
 export async function apiFetch(path, options = {}) {
   let token = localStorage.getItem('authToken')
-  const headers = { 'Content-Type': 'application/json', ...options.headers }
 
   if (token && !isValidAuthToken(token)) {
     localStorage.removeItem('authToken')
     token = null
   }
 
-  if (token) headers.Authorization = `Bearer ${token}`
+  const headers = new Headers(options.headers || {})
+  if (!headers.has('Accept')) headers.set('Accept', 'application/json')
 
-  const response = await fetch(`${API_URL}${path}`, { ...options, headers })
-  const data = await response.json().catch(() => ({}))
-
-  if (!response.ok) {
-    if (response.status === 401 || response.status === 422) {
-      localStorage.removeItem('authToken')
-      localStorage.removeItem('user')
-      localStorage.removeItem('userRole')
-    }
-    throw new Error(data.message || data.error || 'Error en la solicitud')
+  const isFormData = typeof FormData !== 'undefined' && options.body instanceof FormData
+  if (options.body && !isFormData && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json')
   }
+  if (token) headers.set('Authorization', `Bearer ${token}`)
 
-  return data
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+
+  try {
+    const response = await fetch(`${env.apiUrl}${path}`, {
+      ...options,
+      headers,
+      signal: controller.signal,
+    })
+    const data = await response.json().catch(() => ({}))
+
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 422) {
+        clearSession()
+      }
+      throw new Error(data.message || data.error || 'Error en la solicitud')
+    }
+
+    return data
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      throw new Error('La solicitud tardó demasiado. Verifica tu conexión e intenta de nuevo.', { cause: error })
+    }
+    if (error instanceof TypeError) {
+      throw new Error('No se pudo conectar con el servidor. Verifica que el backend esté disponible.', { cause: error })
+    }
+    throw error
+  } finally {
+    clearTimeout(timeoutId)
+  }
 }
 
 /**
@@ -65,7 +97,7 @@ export function normalizeTechnician(tech) {
 }
 
 /**
- * Normaliza una cita desde el formato enriquecido de Flask para que funcione
+ * Normaliza una cita desde el formato enriquecido del backend para que funcione
  * tanto con campos planos (serviceName, clientName...) como anidados (service.name, customer...).
  */
 export function normalizeAppointment(a) {

@@ -38,7 +38,7 @@ function TechnicianAuth() {
 
       login(data.user, data.technicianProfile, data.token)
     } catch (err) {
-      setError(err.message || 'Error de conexión. ¿Está el backend en puerto 5000?')
+      setError(err.message || 'Error de conexión. Verifica que el backend esté disponible.')
     } finally {
       setLoading(false)
     }
@@ -68,7 +68,7 @@ function TechnicianAuth() {
                   <label>Correo electrónico</label>
                   <div className={`input-wrapper ${fieldErrors.email ? 'has-error' : ''}`}>
                     <i className="fa-regular fa-envelope" />
-                    <input type="email" name="email" placeholder="tecnico@mail.com"
+                    <input type="email" name="email" data-testid="auth-email" placeholder="tecnico@mail.com"
                       value={formData.email}
                       onChange={e => { setFormData({ ...formData, email: e.target.value }); setFieldErrors({}); setError('') }}
                     />
@@ -80,7 +80,7 @@ function TechnicianAuth() {
                   <label>Contraseña</label>
                   <div className={`input-wrapper ${fieldErrors.password ? 'has-error' : ''}`}>
                     <i className="fa-solid fa-lock" />
-                    <input type="password" name="password" placeholder="••••••••"
+                    <input type="password" name="password" data-testid="auth-password" placeholder="••••••••"
                       value={formData.password}
                       onChange={e => { setFormData({ ...formData, password: e.target.value }); setFieldErrors({}); setError('') }}
                     />
@@ -94,7 +94,7 @@ function TechnicianAuth() {
 
                 {error && <div className="error-message">{error}</div>}
 
-                <button type="submit" className="btn-auth-submit technician-submit" disabled={loading}>
+                <button type="submit" className="btn-auth-submit technician-submit" data-testid="auth-submit" disabled={loading}>
                   {loading ? 'Verificando...' : 'Iniciar sesión'}
                 </button>
               </form>

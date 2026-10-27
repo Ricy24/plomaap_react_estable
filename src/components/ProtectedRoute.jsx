@@ -1,13 +1,6 @@
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth, DASHBOARD_BY_ROLE } from '../context/AuthContext'
 
-const LOGIN_BY_ROLE = {
-  customer: '/ingresar/cliente',
-  user: '/ingresar/cliente',
-  technician: '/ingresar/tecnico',
-  admin: '/admin',
-}
-
 function ProtectedRoute({ children, allowedRoles }) {
   const { user, ready } = useAuth()
   const location = useLocation()
@@ -48,5 +41,4 @@ function ProtectedRoute({ children, allowedRoles }) {
   return children
 }
 
-export { LOGIN_BY_ROLE }
 export default ProtectedRoute

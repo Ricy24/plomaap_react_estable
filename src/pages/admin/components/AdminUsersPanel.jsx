@@ -20,8 +20,6 @@ function AdminUsersPanel({ users, services, currentUserId, onUserUpdated, onUser
       const data = await adminApi.updateUser(editingUser.id, payload)
       onUserUpdated?.(data?.user || data)
       setEditingUser(null)
-    } catch (err) {
-      throw err
     } finally {
       setSaving(false)
     }

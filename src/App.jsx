@@ -10,7 +10,7 @@ import AdminAuth from './pages/auth/AdminAuth.jsx'
 import ClientDashboard from './pages/client/ClientDashboard.jsx'
 import TechnicianDashboard from './pages/technician/TechnicianDashboard.jsx'
 import AdminDashboard from './pages/admin/AdminDashboard.jsx'
-import './styles/theme-global.css'
+import { env } from './config/env.js'
 
 function GuestOnly({ children }) {
   const { user, ready, dashboardPath } = useAuth()
@@ -96,9 +96,8 @@ function AppRoutes() {
 }
 
 function App() {
-  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
   return (
-    <GoogleOAuthProvider clientId={googleClientId}>
+    <GoogleOAuthProvider clientId={env.googleClientId}>
       <BrowserRouter>
         <AuthProvider>
           <AppRoutes />

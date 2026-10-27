@@ -152,8 +152,8 @@ function ClientAuth() {
               address: prev.address
           }));
       }
-  } catch (err) {
-      setError('Error de conexión. Verifica que el servidor Flask esté corriendo.');
+  } catch {
+      setError('Error de conexión. Verifica que el backend esté corriendo.');
   } finally {
       setLoading(false);
   }
@@ -185,8 +185,8 @@ function ClientAuth() {
       // 4. Éxito: Guardamos la sesión
       saveSession({ token: data.token, user: data.user })
       
-    } catch (err) {
-      setError('Error de red al procesar Google Login. Verifica que el servidor Flask esté corriendo.')
+    } catch {
+      setError('Error de red al procesar Google Login. Verifica que el backend esté corriendo.')
     } finally {
       setLoading(false)
     }
@@ -221,7 +221,7 @@ function ClientAuth() {
                     <label>Nombre completo</label>
                     <div className={`input-wrapper ${fieldErrors.name ? 'has-error' : ''}`}>
                       <i className="fa-regular fa-user" />
-                      <input type="text" name="name" placeholder="Ej. Juan Pérez"
+                      <input type="text" name="name" data-testid="auth-name" placeholder="Ej. Juan Pérez"
                         value={formData.name} onChange={handleInputChange} />
                     </div>
                     {fieldErrors.name && <p className="field-error">{fieldErrors.name}</p>}
@@ -232,7 +232,7 @@ function ClientAuth() {
                   <label>Correo electrónico</label>
                   <div className={`input-wrapper ${fieldErrors.email ? 'has-error' : ''}`}>
                     <i className="fa-regular fa-envelope" />
-                    <input type="email" name="email" placeholder="cliente@mail.com"
+                    <input type="email" name="email" data-testid="auth-email" placeholder="cliente@mail.com"
                       value={formData.email} onChange={handleInputChange} />
                   </div>
                   {fieldErrors.email && <p className="field-error">{fieldErrors.email}</p>}
@@ -245,6 +245,7 @@ function ClientAuth() {
                     <input 
                       type={showPassword ? 'text' : 'password'} 
                       name="password" 
+                      data-testid="auth-password"
                       placeholder="Mín. 8 caracteres"
                       value={formData.password} 
                       onChange={handleInputChange} 
@@ -273,6 +274,7 @@ function ClientAuth() {
                         <input 
                           type={showConfirmPassword ? 'text' : 'password'} 
                           name="confirmPassword" 
+                          data-testid="auth-confirm-password"
                           placeholder="Repita su contraseña"
                           value={formData.confirmPassword} 
                           onChange={handleInputChange} 
@@ -297,7 +299,7 @@ function ClientAuth() {
                       <label>Teléfono de contacto</label>
                       <div className={`input-wrapper ${fieldErrors.phone ? 'has-error' : ''}`}>
                         <i className="fa-solid fa-phone" />
-                        <input type="tel" name="phone" placeholder="3229874810"
+                        <input type="tel" name="phone" data-testid="auth-phone" placeholder="3229874810"
                           value={formData.phone} onChange={handleInputChange} />
                       </div>
                       {fieldErrors.phone && <p className="field-error">{fieldErrors.phone}</p>}
@@ -307,7 +309,7 @@ function ClientAuth() {
                       <label>Dirección de residencia</label>
                       <div className={`input-wrapper ${fieldErrors.address ? 'has-error' : ''}`}>
                         <i className="fa-solid fa-location-dot" />
-                        <input type="text" name="address" placeholder="Cra 77A #45d sur..."
+                        <input type="text" name="address" data-testid="auth-address" placeholder="Cra 77A #45d sur..."
                           value={formData.address} onChange={handleInputChange} />
                       </div>
                       {fieldErrors.address && <p className="field-error">{fieldErrors.address}</p>}
@@ -338,7 +340,7 @@ function ClientAuth() {
                 {error && <div className="error-message">{error}</div>}
                 {success && <div className="success-message">{success}</div>}
 
-                <button type="submit" className="btn-auth-submit" disabled={loading}>
+                <button type="submit" className="btn-auth-submit" data-testid="auth-submit" disabled={loading}>
                   {loading ? 'Procesando...' : (isLogin ? 'Iniciar sesión' : 'Registrarse')}
                 </button>
               </form>

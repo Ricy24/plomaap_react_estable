@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { env } from '../config/env'
 
 function AddressMap({ address, onLocationChange, editable = false, onAddressChange }) {
   const [displayAddress, setDisplayAddress] = useState(address || '')
@@ -26,11 +27,11 @@ function AddressMap({ address, onLocationChange, editable = false, onAddressChan
       // Agregar Bogotá a la búsqueda para filtrar por ciudad
       const searchQuery = `${addressText}, Bogotá, Colombia`
       const response = await fetch(
-        `${import.meta.env.VITE_GEOCODING_API}?q=${encodeURIComponent(searchQuery)}&format=json&limit=5`,
+        `${env.geocodingApi}?q=${encodeURIComponent(searchQuery)}&format=json&limit=5`,
         {
           headers: {
-            'User-Agent': 'plomaap-app'
-          }
+            Accept: 'application/json',
+          },
         }
       )
       
@@ -81,6 +82,7 @@ function AddressMap({ address, onLocationChange, editable = false, onAddressChan
     if (!editable && address) {
       geocodeAddress(address)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, editable])
 
   const handleAddressInput = (e) => {

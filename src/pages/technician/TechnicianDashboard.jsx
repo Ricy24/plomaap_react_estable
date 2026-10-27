@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { appointmentsApi, techniciansApi, authApi, getInitials } from '../../services/api'
+import { techniciansApi, authApi, getInitials } from '../../services/api'
 import ProfileEditForm from '../../components/profile/ProfileEditForm'
 import '../../styles/dashboard.css'
 import '../../styles/technician-dashboard.css'
@@ -34,10 +34,6 @@ function TechnicianDashboard({ user, technicianProfile, onLogout, onUserUpdate }
   const upcoming = appointments.filter(a => a.status === 'scheduled' || a.status === 'in_progress')
   const completed = appointments.filter(a => a.status === 'completed')
 
-  useEffect(() => {
-    loadData()
-  }, [])
-
   const loadData = async () => {
     setLoading(true)
     try {
@@ -56,6 +52,11 @@ function TechnicianDashboard({ user, technicianProfile, onLogout, onUserUpdate }
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    void loadData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleSaveProfile = async (payload) => {
     setSavingProfile(true)
@@ -98,7 +99,7 @@ function TechnicianDashboard({ user, technicianProfile, onLogout, onUserUpdate }
   }
 
   return (
-    <div className="dash-layout tech-theme">
+    <div className="dash-layout tech-theme" data-testid="technician-dashboard">
       <aside className="dash-sidebar tech-sidebar">
         <div className="dash-brand tech-brand">
           <div className="logo-dot tech-dot" /><span>PlomApp</span>
@@ -341,18 +342,6 @@ function TechAppointmentRow({ appointment: a, full = false, updating, onStatusCh
             <i className="fa-solid fa-check" /> Completar
           </button>
         )}
-      </div>
-    </div>
-  )
-}
-
-function InfoRow({ icon, label, value }) {
-  return (
-    <div className="dash-info-row">
-      <div className="dash-info-row-icon tech-icon"><i className={`fa-solid ${icon}`} /></div>
-      <div>
-        <p className="dash-info-label">{label}</p>
-        <p className="dash-info-value">{value}</p>
       </div>
     </div>
   )
