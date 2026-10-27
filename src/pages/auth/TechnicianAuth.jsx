@@ -30,6 +30,12 @@ function TechnicianAuth() {
       const data = await authApi.login(formData.email.trim(), formData.password, 'technician')
       if (!data.success) { setError(data.message); return }
 
+      if (data.user?.role !== 'technician') {
+        const roleName = data.user?.role === 'admin' ? 'Administrador' : 'Cliente'
+        setError(`Esta cuenta tiene rol de ${roleName}. Por favor ingresa por el portal correspondiente.`)
+        return
+      }
+
       login(data.user, data.technicianProfile, data.token)
     } catch (err) {
       setError(err.message || 'Error de conexión. ¿Está el backend en puerto 5000?')

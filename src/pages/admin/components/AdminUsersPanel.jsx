@@ -3,7 +3,7 @@ import { adminApi, getInitials } from '../../../services/api'
 import AdminUserEditModal from './AdminUserEditModal'
 import AdminCreateUserModal from './AdminCreateUserModal'
 
-const ROLE_LABELS = { user: 'Cliente', technician: 'Técnico', admin: 'Administrador' }
+const ROLE_LABELS = { customer: 'Cliente', user: 'Cliente', technician: 'Técnico', admin: 'Administrador' }
 const STATUS_LABELS = { active: 'Activo', disabled: 'Inhabilitado' }
 
 function AdminUsersPanel({ users, services, currentUserId, onUserUpdated, onUserCreated }) {

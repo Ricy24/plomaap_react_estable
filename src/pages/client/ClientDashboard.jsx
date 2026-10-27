@@ -39,8 +39,7 @@ function ClientDashboard({ user, onLogout, onUserUpdate }) {
       techniciansApi.getSlots(selectedDate, selectedService.id)
         .then(data => setAvailableSlots(data.slots || []))
         .catch(() => setAvailableSlots([]))
-      
-      techniciansApi.getMyAppointments = appointmentsApi.getTechnicianOptions
+
       appointmentsApi.getTechnicianOptions(selectedDate, selectedService.id)
         .then(data => setAvailableTechnicians(data.technicians || []))
         .catch(() => setAvailableTechnicians([]))
@@ -88,6 +87,7 @@ function ClientDashboard({ user, onLogout, onUserUpdate }) {
         serviceId: selectedService.id,
         date: selectedDate,
         time: selectedTime,
+        address: userAddress,
         notes: `Dirección de servicio: ${userAddress}`
       }
       if (selectedTechnician) {
@@ -339,10 +339,21 @@ function ClientDashboard({ user, onLogout, onUserUpdate }) {
                         ? <p className="dash-empty-text">No hay horarios disponibles este día. Prueba otra fecha.</p>
                         : (
                           <div className="dash-slots-row">
-                            {availableSlots.map(slot => (
-                              <button key={slot} className={`dash-slot ${selectedTime === slot ? 'selected' : ''}`}
-                                onClick={() => setSelectedTime(slot)}>{slot}</button>
-                            ))}
+                            {availableSlots.map(slot => {
+                              const slotTime = typeof slot === 'string' ? slot : (slot.time || slot.start)
+                              const isAvail = typeof slot === 'string' ? true : (slot.available !== false)
+                              return (
+                                <button
+                                  key={slotTime}
+                                  type="button"
+                                  disabled={!isAvail}
+                                  className={`dash-slot ${selectedTime === slotTime ? 'selected' : ''} ${!isAvail ? 'disabled' : ''}`}
+                                  onClick={() => isAvail && setSelectedTime(slotTime)}
+                                >
+                                  {slotTime}
+                                </button>
+                              )
+                            })}
                           </div>
                         )
                       }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { appointmentsApi, authApi, getInitials } from '../../services/api'
+import { appointmentsApi, techniciansApi, authApi, getInitials } from '../../services/api'
 import ProfileEditForm from '../../components/profile/ProfileEditForm'
 import '../../styles/dashboard.css'
 import '../../styles/technician-dashboard.css'
@@ -8,14 +8,25 @@ import '../../styles/profile-edit.css'
 const DAY_NAMES = { mon: 'Lun', tue: 'Mar', wed: 'Mié', thu: 'Jue', fri: 'Vie', sat: 'Sáb', sun: 'Dom' }
 const STATUS_LABELS = { scheduled: 'Programada', in_progress: 'En curso', completed: 'Completada', cancelled: 'Cancelada' }
 
+function formatScheduleSlot(slot) {
+  if (Array.isArray(slot)) {
+    const start = String(slot[0]).padStart(2, '0')
+    const end = String(slot[1]).padStart(2, '0')
+    return `${start}:00 - ${end}:00`
+  }
+  return String(slot)
+}
+
 function TechnicianDashboard({ user, technicianProfile, onLogout, onUserUpdate }) {
   const [activeTab, setActiveTab] = useState('inicio')
   const [appointments, setAppointments] = useState([])
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState(null)
   const [savingProfile, setSavingProfile] = useState(false)
+  const [profile, setProfile] = useState(
+    technicianProfile || JSON.parse(localStorage.getItem('technicianProfile') || 'null')
+  )
 
-  const profile = technicianProfile || JSON.parse(localStorage.getItem('technicianProfile') || 'null')
   const firstName = user?.name?.split(' ')[0] || 'Técnico'
   const today = new Date().toISOString().split('T')[0]
 
@@ -23,13 +34,22 @@ function TechnicianDashboard({ user, technicianProfile, onLogout, onUserUpdate }
   const upcoming = appointments.filter(a => a.status === 'scheduled' || a.status === 'in_progress')
   const completed = appointments.filter(a => a.status === 'completed')
 
-  useEffect(() => { loadAppointments() }, [])
+  useEffect(() => {
+    loadData()
+  }, [])
 
-  const loadAppointments = async () => {
+  const loadData = async () => {
     setLoading(true)
     try {
-      const data = await appointmentsApi.getAll()
-      setAppointments(data.appointments || [])
+      const [apptData, profData] = await Promise.all([
+        techniciansApi.getMyAppointments().catch(() => ({ appointments: [] })),
+        profile ? Promise.resolve(profile) : techniciansApi.getProfile().catch(() => null)
+      ])
+      setAppointments(apptData.appointments || [])
+      if (profData) {
+        setProfile(profData)
+        localStorage.setItem('technicianProfile', JSON.stringify(profData))
+      }
     } catch (err) {
       console.error(err)
     } finally {
@@ -52,7 +72,7 @@ function TechnicianDashboard({ user, technicianProfile, onLogout, onUserUpdate }
   const handleStatusChange = async (id, status) => {
     setUpdating(id)
     try {
-      const data = await appointmentsApi.updateStatus(id, status)
+      const data = await techniciansApi.updateAppointmentStatus(id, status)
       setAppointments(prev => prev.map(a => a.id === id ? data.appointment : a))
     } catch (err) {
       alert(err.message)
@@ -222,8 +242,8 @@ function TechnicianDashboard({ user, technicianProfile, onLogout, onUserUpdate }
               <div className="dash-ia-card tech-schedule-preview">
                 <h3><i className="fa-regular fa-calendar" /> Horario de hoy</h3>
                 <div className="tech-today-slots">
-                  {(profile?.schedule?.[['sun','mon','tue','wed','thu','fri','sat'][new Date().getDay()]] || []).map(slot => (
-                    <span key={slot} className="tech-slot-tag">{slot}</span>
+                  {(profile?.schedule?.[['sun','mon','tue','wed','thu','fri','sat'][new Date().getDay()]] || []).map((slot, idx) => (
+                    <span key={idx} className="tech-slot-tag">{formatScheduleSlot(slot)}</span>
                   ))}
                   {!(profile?.schedule?.[['sun','mon','tue','wed','thu','fri','sat'][new Date().getDay()]]?.length) && (
                     <p className="dash-empty-text">Día libre</p>
@@ -261,7 +281,7 @@ function TechnicianDashboard({ user, technicianProfile, onLogout, onUserUpdate }
                 <div key={day} className={`tech-day-card ${slots.length === 0 ? 'off' : ''}`}>
                   <h4>{DAY_NAMES[day]}</h4>
                   {slots.length > 0
-                    ? <div className="tech-day-slots">{slots.map(s => <span key={s} className="tech-slot-tag">{s}</span>)}</div>
+                    ? <div className="tech-day-slots">{slots.map((s, i) => <span key={i} className="tech-slot-tag">{formatScheduleSlot(s)}</span>)}</div>
                     : <p className="tech-day-off">Libre</p>
                   }
                 </div>

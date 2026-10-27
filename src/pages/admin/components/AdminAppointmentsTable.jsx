@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { getInitials } from '../../../services/api'
 
 const STATUS_LABELS = {
+  pending: 'Pendiente',
   scheduled: 'Programada',
   in_progress: 'En curso',
   completed: 'Completada',
@@ -67,6 +68,15 @@ function AdminAppointmentsTable({ appointments, onStatusChange, updating }) {
                   </span>
                 </td>
                 <td>
+                  {appt.status === 'pending' && (
+                    <button
+                      className="adm-action-btn"
+                      disabled={updating === appt.id}
+                      onClick={() => onStatusChange(appt.id, 'scheduled')}
+                    >
+                      {updating === appt.id ? '...' : 'Programar'}
+                    </button>
+                  )}
                   {appt.status === 'scheduled' && (
                     <button
                       className="adm-action-btn"

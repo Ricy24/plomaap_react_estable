@@ -2,6 +2,7 @@ import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth, DASHBOARD_BY_ROLE } from '../context/AuthContext'
 
 const LOGIN_BY_ROLE = {
+  customer: '/ingresar/cliente',
   user: '/ingresar/cliente',
   technician: '/ingresar/tecnico',
   admin: '/admin',
@@ -30,7 +31,7 @@ function ProtectedRoute({ children, allowedRoles }) {
     return <Navigate to={loginPath} state={{ from: location }} replace />
   }
 
-  if (user.role === 'customer' && location.pathname === '/ingresar/cliente') {
+  if ((user.role === 'customer' || user.role === 'user') && location.pathname === '/ingresar/cliente') {
     return <Navigate to='/cliente' replace />
   }
 
@@ -39,8 +40,9 @@ function ProtectedRoute({ children, allowedRoles }) {
     return <Navigate to="/ingresar" replace />
   }
 
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to={DASHBOARD_BY_ROLE[user.role] || '/'} replace />
+  const normalizedRole = user.role === 'user' ? 'customer' : user.role
+  if (allowedRoles && !allowedRoles.includes(user.role) && !allowedRoles.includes(normalizedRole)) {
+    return <Navigate to={DASHBOARD_BY_ROLE[user.role] || DASHBOARD_BY_ROLE[normalizedRole] || '/'} replace />
   }
 
   return children

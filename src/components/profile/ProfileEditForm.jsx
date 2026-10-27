@@ -8,7 +8,7 @@ import {
   normalizePhone
 } from '../../utils/validation'
 
-const ROLE_LABELS = { user: 'Cliente', technician: 'Técnico', admin: 'Administrador' }
+const ROLE_LABELS = { customer: 'Cliente', user: 'Cliente', technician: 'Técnico', admin: 'Administrador' }
 
 function ProfileEditForm({
   user,
@@ -78,7 +78,7 @@ function ProfileEditForm({
     const fieldErrors = {}
 
     if (editable.includes('name') || editable.includes('phone') || editable.includes('address')) {
-      const needsAddress = isAdminEdit ? role === 'user' : role !== 'admin'
+      const needsAddress = isAdminEdit ? (role === 'user' || role === 'customer') : role !== 'admin'
       Object.assign(fieldErrors, validateProfileSelf(
         { name: form.name, phone: form.phone, address: form.address },
         { requireAddress: needsAddress }

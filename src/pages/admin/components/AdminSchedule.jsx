@@ -1,4 +1,5 @@
 const STATUS_LABELS = {
+  pending: 'Pendiente',
   scheduled: 'Programada',
   in_progress: 'En curso',
   completed: 'Completada',

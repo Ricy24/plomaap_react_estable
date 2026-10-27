@@ -12,13 +12,22 @@ import TechnicianDashboard from './pages/technician/TechnicianDashboard.jsx'
 import AdminDashboard from './pages/admin/AdminDashboard.jsx'
 import './styles/theme-global.css'
 
-function GuestOnly({ children, role }) {
+function GuestOnly({ children }) {
   const { user, ready, dashboardPath } = useAuth()
   if (!ready) return null
-  if (user && (!role || user.role === role)) {
+  if (user) {
     return <Navigate to={dashboardPath} replace />
   }
   return children
+}
+
+function PublicHome() {
+  const { user, ready, dashboardPath } = useAuth()
+  if (!ready) return null
+  if (user) {
+    return <Navigate to={dashboardPath} replace />
+  }
+  return <Home />
 }
 
 function AppRoutes() {
@@ -26,7 +35,7 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<PublicHome />} />
 
       <Route path="/ingresar" element={
         <GuestOnly>
@@ -34,24 +43,24 @@ function AppRoutes() {
         </GuestOnly>
       } />
       <Route path="/ingresar/cliente" element={
-        <GuestOnly role="customer">
+        <GuestOnly>
           <ClientAuth />
         </GuestOnly>
       } />
       <Route path="/ingresar/tecnico" element={
-        <GuestOnly role="technician">
+        <GuestOnly>
           <TechnicianAuth />
         </GuestOnly>
       } />
 
       <Route path="/admin" element={
-        <GuestOnly role="admin">
+        <GuestOnly>
           <AdminAuth />
         </GuestOnly>
       } />
 
       <Route path="/cliente" element={
-        <ProtectedRoute allowedRoles={['customer']}>
+        <ProtectedRoute allowedRoles={['customer', 'user']}>
           <ClientDashboard
             user={user}
             onLogout={logout}

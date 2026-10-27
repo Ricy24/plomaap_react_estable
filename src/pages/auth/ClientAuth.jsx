@@ -123,6 +123,11 @@ function ClientAuth() {
               setError(data.message); 
               return; 
           }
+          if (data.user?.role !== 'customer' && data.user?.role !== 'user') {
+              const roleName = data.user?.role === 'admin' ? 'Administrador' : 'Técnico';
+              setError(`Esta cuenta tiene rol de ${roleName}. Por favor ingresa por el acceso correspondiente.`);
+              return;
+          }
           saveSession(data);
           navigate('/cliente'); 
       } else {

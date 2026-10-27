@@ -30,6 +30,11 @@ function AdminAuth() {
       const data = await authApi.login(formData.email.trim(), formData.password, 'admin')
       if (!data.success) { setError(data.message); return }
 
+      if (data.user?.role !== 'admin') {
+        setError('Acceso denegado. Esta cuenta no tiene permisos de administrador.')
+        return
+      }
+
       login(data.user, null, data.token)
     } catch (err) {
       setError(err.message || 'Error de conexión. ¿Está el backend en puerto 5000?')
