@@ -1,235 +1,171 @@
-# React + Vite
+# PlomApp Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interfaz web de PlomApp para agendar, gestionar y dar seguimiento a servicios de
+plomería. Consume la API Django del repositorio
+[plomaap_django](https://github.com/Ricy24/plomaap_django) y mantiene el mismo
+contrato de endpoints, códigos de estado y formato JSON.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 19 + Vite 8
+- React Router 7
+- Vitest + jsdom para pruebas unitarias
+- Playwright para pruebas E2E
+- ESLint 10
 
-## React Compiler
+## Requisitos
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Node.js **>= 20.19.0** (recomendado 22 LTS, ver `.nvmrc`)
+- npm 10+
+- Backend Django corriendo en `http://localhost:5000` para desarrollo
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-
-
-
-# PlomApp React + Flask
-
-## Requisitos previos
-
-Antes de ejecutar el proyecto, asegúrese de tener instalado:
-
-- Git
-- Python 3.x
-- Node.js
-- MySQL Server
-- MySQL Workbench
-
----
-
-## 1. Clonar el repositorio
-
-Abra Git Bash y ejecute:
+## Inicio rápido
 
 ```bash
-git clone https://github.com/Ricy24/plomaap_react_estable.git
-cd plomaap_react_estable
-```
-
----
-
-## 2. Configuración del Backend (Flask)
-
-### Ingresar a la carpeta del backend
-
-```bash
-cd backend_flask
-```
-
-### Crear el entorno virtual
-
-```bash
-python -m venv venv
-```
-
-### Activar el entorno virtual
-
-```bash
-source venv/Scripts/activate
-```
-
-Si la activación fue correcta, aparecerá `(venv)` al inicio de la terminal.
-
-### Instalar las dependencias
-
-```bash
-pip install -r requirements.txt
-```
-
-### Configurar variables de entorno
-
-Copie el archivo `.env.example` y renómbrelo como `.env`.
-
-Configure las variables necesarias para la conexión a la base de datos:
-
-```env
-MYSQL_HOST=localhost
-MYSQL_USER=root
-MYSQL_PASSWORD=tu_contraseña
-MYSQL_DB=plomaap
-JWT_SECRET_KEY=tu_clave_secreta
-```
-
-### Crear la base de datos
-
-Desde MySQL Workbench ejecute:
-
-```sql
-CREATE DATABASE plomaap;
-```
-
-### Poblar la base de datos (si aplica)
-
-Si el proyecto incluye un archivo `seed.py`, ejecute:
-
-```bash
-python seed.py
-```
-
-### Ejecutar el backend
-
-```bash
-python run.py
-```
-
-El servidor Flask quedará ejecutándose en una dirección similar a:
-
-```text
-http://localhost:5000
-```
-
----
-
-## 3. Configuración del Frontend (React + Vite)
-
-Abra una nueva terminal Git Bash.
-
-Ubíquese nuevamente en la raíz del proyecto:
-
-```bash
-cd plomaap_react_estable
-```
-
-### Instalar dependencias
-
-```bash
-npm install
-```
-
-### Ejecutar el frontend
-
-```bash
+npm ci
+cp .env.example .env
+# edita .env con tus valores locales
 npm run dev
 ```
 
-El proyecto quedará disponible en una dirección similar a:
+La aplicación queda disponible en `http://localhost:5173`.
+
+### Variables de entorno
+
+Todas las variables del frontend son públicas por diseño (Vite las incrusta en
+el bundle). No guardes secretos de servidor en este repositorio.
+
+| Variable | Obligatoria | Descripción |
+| --- | --- | --- |
+| `VITE_API_URL` | Recomendada | URL base del API. Si está vacía se usa el mismo origen (proxy `/api`). |
+| `VITE_GEOCODING_API` | No | Endpoint de Nominatim. Por defecto usa OpenStreetMap. |
+| `VITE_CLOUDINARY_CLOUD_NAME` | Para fotos | Cloud name de Cloudinary. |
+| `VITE_CLOUDINARY_UPLOAD_PRESET` | Para fotos | Upload preset (unsigned) de Cloudinary. |
+| `VITE_GOOGLE_CLIENT_ID` | Para Google Login | Client ID OAuth 2.0. |
+
+`.env` está ignorado por Git. Usa `.env.example` como plantilla.
+
+## Scripts
+
+| Comando | Descripción |
+| --- | --- |
+| `npm run dev` | Servidor de desarrollo con HMR. |
+| `npm run build` | Build de producción en `dist/`. |
+| `npm run preview` | Sirve el build localmente en `http://localhost:4173`. |
+| `npm run lint` | Analiza todo el código con ESLint. |
+| `npm run lint:fix` | Corrige automáticamente lo que ESLint pueda. |
+| `npm run test:unit` | Ejecuta Vitest una vez. |
+| `npm run test:unit:watch` | Vitest en modo watch. |
+| `npm run test:e2e` | Playwright (requiere backend y credenciales E2E). |
+| `npm run check` | Lint + pruebas unitarias + build. |
+
+## Estructura
 
 ```text
-http://localhost:5173
+.
+├── e2e/                 # Configuración y specs de Playwright
+├── public/              # Assets estáticos servidos en /
+├── src/
+│   ├── assets/          # Imágenes importadas por el bundle
+│   ├── components/      # Componentes reutilizables
+│   ├── config/          # Variables de entorno centralizadas
+│   ├── context/         # Autenticación y sesión
+│   ├── hooks/           # Hooks compartidos
+│   ├── pages/           # Vistas por rol (cliente, técnico, admin)
+│   ├── services/        # Cliente HTTP y normalización de respuestas
+│   ├── styles/          # CSS por módulo
+│   └── utils/           # Utilidades (Cloudinary, perfiles, etc.)
+├── tests/unit/          # Pruebas unitarias (Vitest)
+├── .env.example
+├── eslint.config.js
+├── vite.config.js
+└── vitest.config.js
 ```
 
----
+## Pruebas
 
-## 4. Ejecución diaria del proyecto
-
-### Iniciar Backend
+### Unitarias
 
 ```bash
-cd backend_flask
-source venv/Scripts/activate
-python run.py
+npm run test:unit
 ```
 
-### Iniciar Frontend
+Cubren validaciones de formularios y normalización de respuestas del API. No
+necesitan backend ni base de datos.
 
-En otra terminal:
+### E2E
+
+1. Levanta el backend Django y su base de datos sembrada.
+2. Define las credenciales de prueba:
 
 ```bash
-cd plomaap_react_estable
-npm run dev
+E2E_CLIENT_EMAIL=cliente@ejemplo.com
+E2E_CLIENT_PASSWORD=...
+E2E_TECHNICIAN_EMAIL=tecnico@ejemplo.com
+E2E_TECHNICIAN_PASSWORD=...
+E2E_ADMIN_EMAIL=admin@ejemplo.com
+E2E_ADMIN_PASSWORD=...
 ```
 
----
-
-## Comandos útiles
-
-### Activar entorno virtual
+3. Ejecuta:
 
 ```bash
-source venv/Scripts/activate
+npm run test:e2e
 ```
 
-### Desactivar entorno virtual
+Playwright levanta el frontend automáticamente en `http://127.0.0.1:5173` si no
+existe un servidor. Si usas una URL distinta, define `E2E_BASE_URL`. Los specs se
+saltan de forma limpia cuando faltan credenciales.
+
+## Producción
 
 ```bash
-deactivate
+npm ci
+npm run check
+npm run build
 ```
 
-### Instalar nuevas dependencias de Python
+Sirve el contenido de `dist/` con un servidor estático y configura fallback de
+SPA hacia `index.html` para que funcionen las rutas de React Router.
 
-```bash
-pip install nombre_paquete
+Ejemplo Nginx:
+
+```nginx
+location / {
+  try_files $uri $uri/ /index.html;
+}
 ```
 
-### Actualizar requirements.txt
+Si el frontend y el API comparten dominio, configura un proxy para `/api` y deja
+`VITE_API_URL` vacía. Si están en dominios distintos, define la URL completa y
+habilita CORS en el backend.
 
-```bash
-pip freeze > requirements.txt
-```
+## Ramas
 
-### Instalar nuevas dependencias de React
+- `production`: versión estable desplegable.
+- `andres_dev`: integración y desarrollo de Andrés.
+- `main`: historial base del repositorio.
 
-```bash
-npm install nombre-paquete
-```
+Los cambios se integran desde `andres_dev` hacia `production` mediante merge y
+tag de versión.
 
----
+## Seguridad
 
-## Tecnologías utilizadas
+- No se versionan `.env`, backups, `venv`, `node_modules`, `dist` ni artefactos
+  de pruebas.
+- Los backends legacy de Flask/Node que vivían dentro de este repositorio fueron
+  retirados; la API oficial es el proyecto Django.
+- Si detectas una credencial real expuesta, rótala en el proveedor
+  correspondiente. Las variables `VITE_*` son visibles en el navegador.
 
-### Frontend
+## Solución de problemas
 
-- React
-- Vite
-- JavaScript
-- CSS
-
-### Backend
-
-- Python
-- Flask
-- SQLAlchemy
-- JWT
-
-### Base de datos
-
-- MySQL
-- MySQL Workbench
-
-### Control de versiones
-
-- Git
-- GitHub
-
----
-
-## Notas
-
-- Mantenga siempre el entorno virtual activado mientras trabaje en el backend.
-- El backend y el frontend deben ejecutarse en terminales separadas.
-- Verifique que MySQL esté en ejecución antes de iniciar el backend.
-- Si es la primera vez que ejecuta el proyecto, asegúrese de configurar correctamente el archivo `.env`.
+- **Google Login: “The given origin is not allowed”**: agrega
+  `http://localhost:5173` (y el dominio de producción) en *Authorized JavaScript
+  origins* del Client ID en Google Cloud Console.
+- **Error de conexión con el API**: verifica `VITE_API_URL`, que el backend esté
+  corriendo y que CORS permita el origen del frontend.
+- **Las fotos no suben**: revisa `VITE_CLOUDINARY_CLOUD_NAME` y
+  `VITE_CLOUDINARY_UPLOAD_PRESET`; el preset debe ser unsigned.
+- **Playwright no encuentra Chromium**: ejecuta
+  `npx playwright install chromium`.
