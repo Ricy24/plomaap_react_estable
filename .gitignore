@@ -43,3 +43,8 @@ blob-report
 *.sln
 *.sw?
 .vercel
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example

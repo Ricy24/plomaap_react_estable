@@ -1,8 +1,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+import { cloudflare } from "@cloudflare/vite-plugin";
+
 export default defineConfig(({ mode }) => ({
-  plugins: [react()],
+  plugins: [react(), cloudflare()],
   server: {
     headers: {
       'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',

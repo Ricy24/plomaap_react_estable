@@ -2,21 +2,34 @@
 
 La app no tiene dominio propio: la API vive en `lifeosandres.duckdns.org` y los
 nameservers de `duckdns.org` no se controlan, así que **no se puede usar el proxy
-naranja, WAF ni las reglas de firewall de zona**. Tampoco hay que comprar nada:
-Cloudflare ofrece dos productos que funcionan con subdominios suyos.
+naranja, ni el WAF de zona, ni las reglas de firewall**. Tampoco hace falta
+comprar nada: Cloudflare ofrece productos que funcionan con subdominios suyos.
 
-## Arquitectura
+## Arquitectura desplegada
 
-| Pieza | URL | Plan | Límite real |
+| Pieza | URL | Producto | Límite real |
 |---|---|---|---|
-| Frontend (SPA) | `https://<proyecto>.pages.dev` | Pages Free | requests estáticos y **bandwidth ilimitados** |
-| API (proxy) | `https://plomaap-api.<sub>.workers.dev` | Workers Free | 100.000 req/día |
+| Frontend (SPA) | `https://plomaap-web.plomaap-frontend.workers.dev` | Workers static assets | requests a estáticos **gratis e ilimitados** |
+| API (proxy) | `https://plomaap-api.plomaap-frontend.workers.dev` | Workers Free | 100.000 req/día |
 | Backend Django | `https://lifeosandres.duckdns.org/plomaap-api` | Oracle Always Free | 10 TB/mes de salida |
 
-El frontend **no** pasa por el Worker: Pages ya sirve desde el edge y añadir un
-Worker delante solo consumiría cuota de Workers sin aportar nada.
+El frontend **no** pasa por el Worker de la API: Cloudflare ya sirve los assets
+desde su edge, y meter un Worker delante solo gastaría cuota de Workers sin
+aportar nada.
 
-## Qué aporta el Worker (`api-proxy/`)
+`plomaap-react.vercel.app` sigue vivo como respaldo, apuntando **directo** a
+Oracle (sin Worker). Son dos caminos independientes: si el Worker falla, el
+front de Vercel sigue funcionando.
+
+## Por qué Workers y no Pages
+
+`wrangler` 4.155 ya no crea proyectos Pages clásicos: `pages project create`
+crea un Worker con assets estáticos. En ese modo la regla de SPA
+`/*  /index.html  200` se rechaza por "bucle infinito", así que el fallback se
+resuelve con `not_found_handling = "single-page-application"` en
+`wrangler.jsonc`. El resultado es equivalente: los estáticos son ilimitados.
+
+## Qué aporta el Worker de la API (`api-proxy/`)
 
 - **Rate limiting** por IP con el binding nativo (incluido en Free):
   - `RL_AUTH` 10 req/60 s → `/api/auth/*` (frena fuerza bruta en login/registro)
@@ -28,34 +41,30 @@ Worker delante solo consumiría cuota de Workers sin aportar nada.
 - Los `OPTIONS` (preflight CORS) no consumen rate limit.
 
 El límite del binding es **aproximado y por ubicación de Cloudflare**, no un
-contador global exacto: sirve como protección anti-abuso, no como cuota de negocio.
+contador global exacto: sirve como protección anti-abuso, no como cuota de
+negocio. Una ráfaga muy rápida puede pasar de largo antes de que el contador se
+sincronice.
 
 ## Despliegue
 
 ```powershell
-# 1. Login (una vez)
-npx wrangler login
+# Requiere `npx wrangler login` una vez (scopes workers_scripts:write y pages:write)
 
-# 2. Worker de la API
-npx wrangler deploy --config cloudflare/api-proxy/wrangler.toml
+# Frontend: build + deploy del Worker con assets
+# VITE_API_URL debe apuntar al Worker de la API en el momento del build
+$env:VITE_API_URL="https://plomaap-api.plomaap-frontend.workers.dev"
+npm run deploy
 
-# 3. Probar el Worker antes de cambiar el front
-curl.exe -s -o NUL -w "%{http_code}" https://plomaap-api.<sub>.workers.dev/api/services
-
-# 4. Frontend a Pages (se construye en local, con la URL del Worker)
-$env:VITE_API_URL="https://plomaap-api.<sub>.workers.dev"
-npm run build
-npx wrangler pages project create plomaap --production-branch=production
-npx wrangler pages deploy dist --project-name=plomaap --branch=production
+# API
+npx wrangler deploy -c cloudflare/api-proxy/wrangler.toml
 ```
 
-`public/_redirects` resuelve el fallback de la SPA y `public/_headers` fija el
-cache inmutable de `/assets/*`. Vercel ignora ambos ficheros, así que el
-despliegue en Vercel sigue funcionando igual como respaldo.
+`public/_headers` fija el cache inmutable de `/assets/*` y las cabeceras de
+seguridad del front. Vercel ignora ese fichero, así que su despliegue no cambia.
 
 ## Revertir
 
-- Front: basta con volver a usar `https://plomaap-react.vercel.app`.
-- API: cambiar `VITE_API_URL` de vuelta a
-  `https://lifeosandres.duckdns.org/plomaap-api` y reconstruir.
+- Front: usar `https://plomaap-react.vercel.app`.
+- API: apuntar `VITE_API_URL` a `https://lifeosandres.duckdns.org/plomaap-api`
+  y reconstruir.
 - El backend no se toca en ningún momento: el Worker solo proxya.
