@@ -5,14 +5,19 @@ const EVENTS = ['mousedown', 'keydown', 'scroll', 'touchstart', 'click']
 
 export function useSessionTimeout(isLoggedIn, onTimeout) {
   const timerRef = useRef(null)
+  const onTimeoutRef = useRef(onTimeout)
+
+  useEffect(() => {
+    onTimeoutRef.current = onTimeout
+  }, [onTimeout])
 
   const resetTimer = useCallback(() => {
     if (!isLoggedIn) return
     if (timerRef.current) clearTimeout(timerRef.current)
     timerRef.current = setTimeout(() => {
-      onTimeout?.()
+      onTimeoutRef.current?.()
     }, INACTIVITY_MS)
-  }, [isLoggedIn, onTimeout])
+  }, [isLoggedIn])
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -21,7 +26,7 @@ export function useSessionTimeout(isLoggedIn, onTimeout) {
     }
 
     resetTimer()
-    EVENTS.forEach(evt => window.addEventListener(evt, resetTimer))
+    EVENTS.forEach(evt => window.addEventListener(evt, resetTimer, { passive: true }))
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current)
       EVENTS.forEach(evt => window.removeEventListener(evt, resetTimer))

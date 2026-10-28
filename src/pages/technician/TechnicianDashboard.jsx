@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react'
 import { techniciansApi, authApi, getInitials } from '../../services/api'
 import ProfileEditForm from '../../components/profile/ProfileEditForm'
+import Logo from '../../components/ui/Logo'
+import { DashboardSkeleton } from '../../components/ui/Skeleton'
+import EmptyState from '../../components/ui/EmptyState'
+import { useFeedback } from '../../components/ui/feedbackContext'
 import '../../styles/dashboard.css'
 import '../../styles/technician-dashboard.css'
 import '../../styles/profile-edit.css'
@@ -18,6 +22,7 @@ function formatScheduleSlot(slot) {
 }
 
 function TechnicianDashboard({ user, technicianProfile, onLogout, onUserUpdate }) {
+  const { toast } = useFeedback()
   const [activeTab, setActiveTab] = useState('inicio')
   const [appointments, setAppointments] = useState([])
   const [loading, setLoading] = useState(true)
@@ -48,6 +53,7 @@ function TechnicianDashboard({ user, technicianProfile, onLogout, onUserUpdate }
       }
     } catch (err) {
       console.error(err)
+      toast.error('No pudimos cargar tus citas asignadas.')
     } finally {
       setLoading(false)
     }
@@ -63,6 +69,7 @@ function TechnicianDashboard({ user, technicianProfile, onLogout, onUserUpdate }
     try {
       const data = await authApi.updateProfile(payload)
       onUserUpdate?.(data.user, data.technicianProfile)
+      toast.success('Tus datos se actualizaron correctamente.')
     } catch (err) {
       setSavingProfile(false)
       throw err
@@ -75,8 +82,13 @@ function TechnicianDashboard({ user, technicianProfile, onLogout, onUserUpdate }
     try {
       const data = await techniciansApi.updateAppointmentStatus(id, status)
       setAppointments(prev => prev.map(a => a.id === id ? data.appointment : a))
+      toast.success(
+        status === 'in_progress'
+          ? 'Servicio iniciado. ¡Buen trabajo!'
+          : 'Servicio marcado como completado.'
+      )
     } catch (err) {
-      alert(err.message)
+      toast.error(err.message, { title: 'No se pudo actualizar la cita' })
     } finally {
       setUpdating(null)
     }
@@ -91,9 +103,8 @@ function TechnicianDashboard({ user, technicianProfile, onLogout, onUserUpdate }
 
   if (loading) {
     return (
-      <div className="dash-loading">
-        <i className="fa-solid fa-spinner fa-spin" />
-        <p>Cargando panel técnico...</p>
+      <div data-testid="technician-dashboard">
+        <DashboardSkeleton label="Cargando panel técnico..." />
       </div>
     )
   }
@@ -102,21 +113,27 @@ function TechnicianDashboard({ user, technicianProfile, onLogout, onUserUpdate }
     <div className="dash-layout tech-theme" data-testid="technician-dashboard">
       <aside className="dash-sidebar tech-sidebar">
         <div className="dash-brand tech-brand">
-          <div className="logo-dot tech-dot" /><span>PlomApp</span>
+          <Logo tone="tech" />
         </div>
-        <nav className="dash-nav">
+        <nav className="dash-nav" aria-label="Navegación del panel técnico">
           {navItems.map(item => (
-            <button key={item.id} className={`dash-nav-item tech-nav-item ${activeTab === item.id ? 'active' : ''}`}
-              onClick={() => setActiveTab(item.id)}>
-              <i className={`fa-solid ${item.icon}`} /><span>{item.label}</span>
+            <button
+              key={item.id}
+              type="button"
+              className={`dash-nav-item tech-nav-item ${activeTab === item.id ? 'active' : ''}`}
+              aria-current={activeTab === item.id ? 'page' : undefined}
+              onClick={() => setActiveTab(item.id)}
+            >
+              <i className={`fa-solid ${item.icon}`} aria-hidden="true" />
+              <span>{item.label}</span>
             </button>
           ))}
         </nav>
         <div className="dash-sidebar-user">
           <div className="dash-avatar-sm">
             {user?.avatar
-              ? <img src={user.avatar} alt={user.name} />
-              : <span className="dash-avatar-initials tech-initials">{getInitials(user?.name)}</span>
+              ? <img src={user.avatar} alt="" />
+              : <span className="dash-avatar-initials tech-initials" aria-hidden="true">{getInitials(user?.name)}</span>
             }
           </div>
           <div className="dash-sidebar-user-info">
@@ -124,25 +141,27 @@ function TechnicianDashboard({ user, technicianProfile, onLogout, onUserUpdate }
             <p className="dash-sidebar-role">Técnico · ⭐ {profile?.rating || '—'}</p>
           </div>
         </div>
-        <button className="dash-logout" onClick={onLogout}>
-          <i className="fa-solid fa-arrow-right-from-bracket" /><span>Salir</span>
+        <button className="dash-logout" type="button" onClick={onLogout}>
+          <i className="fa-solid fa-arrow-right-from-bracket" aria-hidden="true" />
+          <span>Salir</span>
         </button>
       </aside>
 
-      <main className="dash-main">
+      <main className="dash-main" id="contenido">
         <header className="dash-topbar">
           <div>
             <p className="dash-greeting-label">Panel de técnico</p>
             <h1 className="dash-greeting">Hola, {firstName} 🔧</h1>
           </div>
           <div className="dash-topbar-actions">
-            <div className="tech-rating-badge">
-              <i className="fa-solid fa-star" /> {profile?.rating || '4.8'}
+            <div className="tech-rating-badge" title="Calificación promedio">
+              <i className="fa-solid fa-star" aria-hidden="true" />
+              <span>{profile?.rating || '4.8'}</span>
             </div>
             <div className="dash-avatar-header">
               {user?.avatar
-                ? <img src={user.avatar} alt={user.name} />
-                : <span className="dash-avatar-initials tech-initials">{getInitials(user?.name)}</span>
+                ? <img src={user.avatar} alt="" />
+                : <span className="dash-avatar-initials tech-initials" aria-hidden="true">{getInitials(user?.name)}</span>
               }
             </div>
           </div>
@@ -150,15 +169,21 @@ function TechnicianDashboard({ user, technicianProfile, onLogout, onUserUpdate }
 
         <div className="dash-stats">
           <div className="dash-stat-card">
-            <div className="dash-stat-icon scheduled tech-stat"><i className="fa-solid fa-calendar-day" /></div>
-            <div><p className="dash-stat-num">{todayAppts.length}</p><p className="dash-stat-label">Citas hoy</p></div>
+            <div className="dash-stat-icon scheduled tech-stat"><i className="fa-solid fa-calendar-day" aria-hidden="true" /></div>
+            <div>
+              <p className="dash-stat-num">{todayAppts.length}</p>
+              <p className="dash-stat-label">Citas hoy</p>
+            </div>
           </div>
           <div className="dash-stat-card">
-            <div className="dash-stat-icon completed tech-stat"><i className="fa-solid fa-circle-check" /></div>
-            <div><p className="dash-stat-num">{profile?.completedJobs || completed.length}</p><p className="dash-stat-label">Servicios realizados</p></div>
+            <div className="dash-stat-icon completed tech-stat"><i className="fa-solid fa-circle-check" aria-hidden="true" /></div>
+            <div>
+              <p className="dash-stat-num">{profile?.completedJobs || completed.length}</p>
+              <p className="dash-stat-label">Servicios realizados</p>
+            </div>
           </div>
           <div className="dash-stat-card">
-            <div className="dash-stat-icon location tech-stat"><i className="fa-solid fa-map-location-dot" /></div>
+            <div className="dash-stat-icon location tech-stat"><i className="fa-solid fa-map-location-dot" aria-hidden="true" /></div>
             <div>
               <p className="dash-stat-label">Zonas de cobertura</p>
               <p className="dash-stat-address">{profile?.zones?.join(' · ') || 'Bogotá'}</p>
@@ -174,61 +199,78 @@ function TechnicianDashboard({ user, technicianProfile, onLogout, onUserUpdate }
                   <div className="dash-highlight-badge">Siguiente cita de hoy</div>
                   <h3>{todayAppts[0].serviceName}</h3>
                   <div className="dash-highlight-meta">
-                    <span><i className="fa-regular fa-clock" /> {todayAppts[0].time}</span>
-                    <span><i className="fa-solid fa-user" /> {todayAppts[0].clientName}</span>
-                    <span><i className="fa-solid fa-phone" /> {todayAppts[0].clientPhone || 'Sin teléfono'}</span>
+                    <span><i className="fa-regular fa-clock" aria-hidden="true" /> {todayAppts[0].time}</span>
+                    <span><i className="fa-solid fa-user" aria-hidden="true" /> {todayAppts[0].clientName}</span>
+                    <span><i className="fa-solid fa-phone" aria-hidden="true" /> {todayAppts[0].clientPhone || 'Sin teléfono'}</span>
                   </div>
-                  <p className="dash-highlight-address"><i className="fa-solid fa-location-dot" /> {todayAppts[0].address}</p>
+                  <p className="dash-highlight-address">
+                    <i className="fa-solid fa-location-dot" aria-hidden="true" /> {todayAppts[0].address}
+                  </p>
                   <div className="tech-action-row">
                     {todayAppts[0].status === 'scheduled' && (
-                      <button className="dash-btn-primary tech-btn"
+                      <button
+                        className="dash-btn-primary tech-btn"
+                        type="button"
                         disabled={updating === todayAppts[0].id}
-                        onClick={() => handleStatusChange(todayAppts[0].id, 'in_progress')}>
-                        <i className="fa-solid fa-play" /> Iniciar servicio
+                        onClick={() => handleStatusChange(todayAppts[0].id, 'in_progress')}
+                      >
+                        <i className={`fa-solid ${updating === todayAppts[0].id ? 'fa-spinner fa-spin' : 'fa-play'}`} aria-hidden="true" />
+                        {updating === todayAppts[0].id ? 'Iniciando...' : 'Iniciar servicio'}
                       </button>
                     )}
                     {todayAppts[0].status === 'in_progress' && (
-                      <button className="dash-btn-primary tech-btn"
+                      <button
+                        className="dash-btn-primary tech-btn"
+                        type="button"
                         disabled={updating === todayAppts[0].id}
-                        onClick={() => handleStatusChange(todayAppts[0].id, 'completed')}>
-                        <i className="fa-solid fa-check" /> Marcar completado
+                        onClick={() => handleStatusChange(todayAppts[0].id, 'completed')}
+                      >
+                        <i className={`fa-solid ${updating === todayAppts[0].id ? 'fa-spinner fa-spin' : 'fa-check'}`} aria-hidden="true" />
+                        {updating === todayAppts[0].id ? 'Guardando...' : 'Marcar completado'}
                       </button>
                     )}
                   </div>
                 </div>
               ) : (
                 <div className="dash-highlight-card tech-highlight dash-highlight-empty">
-                  <i className="fa-solid fa-mug-hot" />
+                  <i className="fa-solid fa-mug-hot" aria-hidden="true" />
                   <h3>Sin citas pendientes hoy</h3>
                   <p>Disfruta tu día o revisa las próximas citas programadas.</p>
                 </div>
               )}
 
-              <section className="dash-section">
+              <section className="dash-section" aria-labelledby="proximas-title">
                 <div className="dash-section-header">
-                  <h2>Próximas citas</h2>
-                  <button className="dash-btn-text tech-text" onClick={() => setActiveTab('citas')}>Ver todas</button>
+                  <h2 id="proximas-title">Próximas citas</h2>
+                  <button className="dash-btn-text tech-text" type="button" onClick={() => setActiveTab('citas')}>Ver todas</button>
                 </div>
-                {upcoming.length === 0
-                  ? <p className="dash-empty-text">No tienes citas programadas.</p>
-                  : (
-                    <div className="tech-appt-list">
-                      {upcoming.slice(0, 4).map(a => (
-                        <TechAppointmentRow key={a.id} appointment={a}
-                          updating={updating} onStatusChange={handleStatusChange} />
-                      ))}
-                    </div>
-                  )
-                }
+                {upcoming.length === 0 ? (
+                  <EmptyState
+                    icon="fa-calendar-check"
+                    title="No tienes citas programadas"
+                    description="Cuando un cliente reserve tus servicios aparecerán aquí."
+                  />
+                ) : (
+                  <div className="tech-appt-list">
+                    {upcoming.slice(0, 4).map(a => (
+                      <TechAppointmentRow
+                        key={a.id}
+                        appointment={a}
+                        updating={updating}
+                        onStatusChange={handleStatusChange}
+                      />
+                    ))}
+                  </div>
+                )}
               </section>
             </div>
 
-            <aside className="dash-col-side">
+            <aside className="dash-col-side" aria-label="Tu perfil profesional">
               <div className="dash-profile-card">
                 <div className="dash-profile-avatar">
                   {user?.avatar
-                    ? <img src={user.avatar} alt={user.name} />
-                    : <span className="dash-avatar-initials tech-initials lg">{getInitials(user?.name)}</span>
+                    ? <img src={user.avatar} alt="" />
+                    : <span className="dash-avatar-initials tech-initials lg" aria-hidden="true">{getInitials(user?.name)}</span>
                   }
                 </div>
                 <h3>{user?.name}</h3>
@@ -241,12 +283,12 @@ function TechnicianDashboard({ user, technicianProfile, onLogout, onUserUpdate }
               </div>
 
               <div className="dash-ia-card tech-schedule-preview">
-                <h3><i className="fa-regular fa-calendar" /> Horario de hoy</h3>
+                <h3><i className="fa-regular fa-calendar" aria-hidden="true" /> Horario de hoy</h3>
                 <div className="tech-today-slots">
-                  {(profile?.schedule?.[['sun','mon','tue','wed','thu','fri','sat'][new Date().getDay()]] || []).map((slot, idx) => (
+                  {(profile?.schedule?.[['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'][new Date().getDay()]] || []).map((slot, idx) => (
                     <span key={idx} className="tech-slot-tag">{formatScheduleSlot(slot)}</span>
                   ))}
-                  {!(profile?.schedule?.[['sun','mon','tue','wed','thu','fri','sat'][new Date().getDay()]]?.length) && (
+                  {!(profile?.schedule?.[['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'][new Date().getDay()]]?.length) && (
                     <p className="dash-empty-text">Día libre</p>
                   )}
                 </div>
@@ -256,26 +298,34 @@ function TechnicianDashboard({ user, technicianProfile, onLogout, onUserUpdate }
         )}
 
         {activeTab === 'citas' && (
-          <section className="dash-section">
-            <h2>Mis citas asignadas</h2>
+          <section className="dash-section" aria-labelledby="asignadas-title">
+            <h2 id="asignadas-title">Mis citas asignadas</h2>
             <p className="dash-section-sub">Gestiona el estado de cada servicio.</p>
-            {appointments.length === 0
-              ? <p className="dash-empty-text">No tienes citas asignadas.</p>
-              : (
-                <div className="tech-appt-list full">
-                  {appointments.map(a => (
-                    <TechAppointmentRow key={a.id} appointment={a} full
-                      updating={updating} onStatusChange={handleStatusChange} />
-                  ))}
-                </div>
-              )
-            }
+            {appointments.length === 0 ? (
+              <EmptyState
+                icon="fa-clipboard-list"
+                title="Sin citas asignadas"
+                description="Las reservas de clientes se asignarán a tu agenda automáticamente."
+              />
+            ) : (
+              <div className="tech-appt-list full">
+                {appointments.map(a => (
+                  <TechAppointmentRow
+                    key={a.id}
+                    appointment={a}
+                    full
+                    updating={updating}
+                    onStatusChange={handleStatusChange}
+                  />
+                ))}
+              </div>
+            )}
           </section>
         )}
 
         {activeTab === 'horario' && profile?.schedule && (
-          <section className="dash-section">
-            <h2>Mi horario semanal</h2>
+          <section className="dash-section" aria-labelledby="horario-title">
+            <h2 id="horario-title">Mi horario semanal</h2>
             <p className="dash-section-sub">Franjas horarias en las que estás disponible.</p>
             <div className="tech-weekly-schedule">
               {Object.entries(profile.schedule).map(([day, slots]) => (
@@ -288,6 +338,16 @@ function TechnicianDashboard({ user, technicianProfile, onLogout, onUserUpdate }
                 </div>
               ))}
             </div>
+          </section>
+        )}
+
+        {activeTab === 'horario' && !profile?.schedule && (
+          <section className="dash-section">
+            <EmptyState
+              icon="fa-calendar-week"
+              title="Horario no configurado"
+              description="Pide a un administrador que asigne tus franjas de disponibilidad."
+            />
           </section>
         )}
 
@@ -311,12 +371,13 @@ function TechnicianDashboard({ user, technicianProfile, onLogout, onUserUpdate }
 }
 
 function TechAppointmentRow({ appointment: a, full = false, updating, onStatusChange }) {
+  const busy = updating === a.id
   return (
-    <div className={`tech-appt-row ${a.status} ${full ? 'full' : ''}`}>
+    <article className={`tech-appt-row ${a.status} ${full ? 'full' : ''}`}>
       <div className="tech-appt-client">
         {a.clientAvatar
-          ? <img src={a.clientAvatar} alt={a.clientName} className="tech-client-avatar" />
-          : <span className="tech-client-avatar initials">{getInitials(a.clientName)}</span>
+          ? <img src={a.clientAvatar} alt="" className="tech-client-avatar" />
+          : <span className="tech-client-avatar initials" aria-hidden="true">{getInitials(a.clientName)}</span>
         }
         <div>
           <p className="tech-appt-service">{a.serviceName}</p>
@@ -324,26 +385,34 @@ function TechAppointmentRow({ appointment: a, full = false, updating, onStatusCh
         </div>
       </div>
       <div className="tech-appt-details">
-        <span><i className="fa-regular fa-calendar" /> {a.dateFormatted}</span>
-        <span><i className="fa-regular fa-clock" /> {a.time}</span>
-        <span><i className="fa-solid fa-location-dot" /> {a.address}</span>
+        <span><i className="fa-regular fa-calendar" aria-hidden="true" /> {a.dateFormatted || a.date}</span>
+        <span><i className="fa-regular fa-clock" aria-hidden="true" /> {a.time}</span>
+        <span><i className="fa-solid fa-location-dot" aria-hidden="true" /> {a.address}</span>
       </div>
       <div className="tech-appt-actions">
         <span className={`dash-badge ${a.status}`}>{STATUS_LABELS[a.status]}</span>
         {a.status === 'scheduled' && (
-          <button className="tech-status-btn start" disabled={updating === a.id}
-            onClick={() => onStatusChange(a.id, 'in_progress')}>
-            <i className="fa-solid fa-play" /> Iniciar
+          <button
+            className="tech-status-btn start"
+            type="button"
+            disabled={busy}
+            onClick={() => onStatusChange(a.id, 'in_progress')}
+          >
+            <i className={`fa-solid ${busy ? 'fa-spinner fa-spin' : 'fa-play'}`} aria-hidden="true" /> Iniciar
           </button>
         )}
         {a.status === 'in_progress' && (
-          <button className="tech-status-btn complete" disabled={updating === a.id}
-            onClick={() => onStatusChange(a.id, 'completed')}>
-            <i className="fa-solid fa-check" /> Completar
+          <button
+            className="tech-status-btn complete"
+            type="button"
+            disabled={busy}
+            onClick={() => onStatusChange(a.id, 'completed')}
+          >
+            <i className={`fa-solid ${busy ? 'fa-spinner fa-spin' : 'fa-check'}`} aria-hidden="true" /> Completar
           </button>
         )}
       </div>
-    </div>
+    </article>
   )
 }
 

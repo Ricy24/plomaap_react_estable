@@ -2,11 +2,13 @@ import { useState } from 'react'
 import { adminApi, getInitials } from '../../../services/api'
 import AdminUserEditModal from './AdminUserEditModal'
 import AdminCreateUserModal from './AdminCreateUserModal'
+import { useFeedback } from '../../../components/ui/feedbackContext'
 
 const ROLE_LABELS = { customer: 'Cliente', user: 'Cliente', technician: 'Técnico', admin: 'Administrador' }
 const STATUS_LABELS = { active: 'Activo', disabled: 'Inhabilitado' }
 
 function AdminUsersPanel({ users, services, currentUserId, onUserUpdated, onUserCreated }) {
+  const { toast, confirm } = useFeedback()
   const [editingUser, setEditingUser] = useState(null)
   const [showCreate, setShowCreate] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -20,6 +22,10 @@ function AdminUsersPanel({ users, services, currentUserId, onUserUpdated, onUser
       const data = await adminApi.updateUser(editingUser.id, payload)
       onUserUpdated?.(data?.user || data)
       setEditingUser(null)
+      toast.success('Usuario actualizado correctamente.')
+    } catch (err) {
+      toast.error(err.message, { title: 'No se pudo actualizar' })
+      throw err
     } finally {
       setSaving(false)
     }
@@ -27,11 +33,25 @@ function AdminUsersPanel({ users, services, currentUserId, onUserUpdated, onUser
 
   const handleQuickToggle = async (user) => {
     const newStatus = user.status === 'disabled' ? 'active' : 'disabled'
+    if (newStatus === 'disabled') {
+      const accepted = await confirm({
+        title: `Inhabilitar a ${user.name}`,
+        description: 'La cuenta no podrá iniciar sesión hasta que vuelvas a activarla.',
+        confirmLabel: 'Inhabilitar',
+        cancelLabel: 'Cancelar',
+        tone: 'danger',
+      })
+      if (!accepted) return
+    }
+
     try {
       const data = await adminApi.updateUser(user.id, { status: newStatus })
       onUserUpdated?.(data?.user || data)
+      toast.success(
+        newStatus === 'active' ? 'Cuenta activada.' : 'Cuenta inhabilitada.'
+      )
     } catch (err) {
-      alert(err.message)
+      toast.error(err.message, { title: 'No se pudo cambiar el estado' })
     }
   }
 
@@ -73,13 +93,13 @@ function AdminUsersPanel({ users, services, currentUserId, onUserUpdated, onUser
           <table className="adm-table">
             <thead>
               <tr>
-                <th>Nombre</th>
-                <th>Email</th>
-                <th>Rol</th>
-                <th>Estado</th>
-                <th>Teléfono</th>
-                <th>Citas</th>
-                <th>Acciones</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Email</th>
+                <th scope="col">Rol</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Teléfono</th>
+                <th scope="col">Citas</th>
+                <th scope="col">Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -114,13 +134,19 @@ function AdminUsersPanel({ users, services, currentUserId, onUserUpdated, onUser
                   <td>
                     <div className="adm-row-actions">
                       {canEdit(u) && (
-                        <button className="adm-action-btn" onClick={() => setEditingUser(u)}>
+                        <button
+                          className="adm-action-btn"
+                          type="button"
+                          onClick={() => setEditingUser(u)}
+                          aria-label={`Editar a ${u.name}`}
+                        >
                           Editar
                         </button>
                       )}
                       {canToggle(u) && (
                         <button
                           className={`adm-action-btn ${u.status === 'disabled' ? 'complete' : ''}`}
+                          type="button"
                           onClick={() => handleQuickToggle(u)}
                         >
                           {u.status === 'disabled' ? 'Activar' : 'Inhabilitar'}

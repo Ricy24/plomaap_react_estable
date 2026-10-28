@@ -23,10 +23,11 @@ function AdminAppointmentsTable({ appointments, onStatusChange, updating }) {
       <div className="adm-card-header">
         <h3>Citas recientes</h3>
         <div className="adm-search">
-          <i className="fa-solid fa-magnifying-glass" />
+          <i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
           <input
-            type="text"
+            type="search"
             placeholder="Buscar cita..."
+            aria-label="Buscar cita por cliente, técnico o servicio"
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
@@ -37,15 +38,24 @@ function AdminAppointmentsTable({ appointments, onStatusChange, updating }) {
         <table className="adm-table">
           <thead>
             <tr>
-              <th>Cliente</th>
-              <th>Servicio</th>
-              <th>Técnico</th>
-              <th>Fecha</th>
-              <th>Estado</th>
-              <th>Acción</th>
+              <th scope="col">Cliente</th>
+              <th scope="col">Servicio</th>
+              <th scope="col">Técnico</th>
+              <th scope="col">Fecha</th>
+              <th scope="col">Estado</th>
+              <th scope="col">Acción</th>
             </tr>
           </thead>
           <tbody>
+            {filtered.length === 0 && (
+              <tr>
+                <td colSpan={6}>
+                  <p className="adm-empty">
+                    {search ? 'No encontramos citas con ese criterio.' : 'Sin citas registradas.'}
+                  </p>
+                </td>
+              </tr>
+            )}
             {filtered.map(appt => (
               <tr key={appt.id}>
                 <td>
@@ -71,6 +81,7 @@ function AdminAppointmentsTable({ appointments, onStatusChange, updating }) {
                   {appt.status === 'pending' && (
                     <button
                       className="adm-action-btn"
+                      type="button"
                       disabled={updating === appt.id}
                       onClick={() => onStatusChange(appt.id, 'scheduled')}
                     >
@@ -80,6 +91,7 @@ function AdminAppointmentsTable({ appointments, onStatusChange, updating }) {
                   {appt.status === 'scheduled' && (
                     <button
                       className="adm-action-btn"
+                      type="button"
                       disabled={updating === appt.id}
                       onClick={() => onStatusChange(appt.id, 'in_progress')}
                     >
@@ -89,6 +101,7 @@ function AdminAppointmentsTable({ appointments, onStatusChange, updating }) {
                   {appt.status === 'in_progress' && (
                     <button
                       className="adm-action-btn complete"
+                      type="button"
                       disabled={updating === appt.id}
                       onClick={() => onStatusChange(appt.id, 'completed')}
                     >

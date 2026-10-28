@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSessionTimeout } from '../hooks/useSessionTimeout'
+import { useFeedback } from '../components/ui/feedbackContext'
 
 const AuthContext = createContext(null)
 
@@ -34,6 +35,7 @@ function isValidAuthToken(token) {
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate()
+  const { toast } = useFeedback()
   const [user, setUser] = useState(null)
   const [technicianProfile, setTechnicianProfile] = useState(null)
   const [ready, setReady] = useState(false)
@@ -71,7 +73,10 @@ export function AuthProvider({ children }) {
   }, [navigate])
 
   useSessionTimeout(!!user, () => {
-    alert('Su sesión expiró por inactividad (10 minutos). Por seguridad debe iniciar sesión nuevamente.')
+    toast.info(
+      'Su sesión expiró por inactividad (10 minutos). Inicie sesión nuevamente.',
+      { title: 'Sesión finalizada', duration: 8000 }
+    )
     logout()
   })
 

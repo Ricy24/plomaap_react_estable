@@ -9,9 +9,13 @@ import AdminTodayCard from './components/AdminTodayCard'
 import AdminChart from './components/AdminChart'
 import AdminComposition from './components/AdminComposition'
 import AdminUsersPanel from './components/AdminUsersPanel'
+import { DashboardSkeleton } from '../../components/ui/Skeleton'
+import EmptyState from '../../components/ui/EmptyState'
+import { useFeedback } from '../../components/ui/feedbackContext'
 import '../../styles/admin-dashboard.css'
 
 function AdminDashboard({ user, onLogout, onUserUpdate }) {
+  const { toast } = useFeedback()
   const [activeTab, setActiveTab] = useState('dashboard')
   const [data, setData] = useState(null)
   const [users, setUsers] = useState([])
@@ -34,12 +38,16 @@ function AdminDashboard({ user, onLogout, onUserUpdate }) {
       setServices(svcData.services || [])
     } catch (err) {
       setError(err.message)
+      toast.error(err.message, { title: 'No pudimos cargar el panel' })
     } finally {
       setLoading(false)
     }
   }
 
-  useEffect(() => { loadDashboard() }, [])
+  useEffect(() => {
+    void loadDashboard()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleStatusChange = async (id, status) => {
     setUpdating(id)
@@ -55,8 +63,9 @@ function AdminDashboard({ user, onLogout, onUserUpdate }) {
         )
       }))
       await loadDashboard()
+      toast.success('Estado de la cita actualizado.')
     } catch (err) {
-      alert(err.message)
+      toast.error(err.message, { title: 'No se pudo actualizar la cita' })
     } finally {
       setUpdating(null)
     }
@@ -64,19 +73,29 @@ function AdminDashboard({ user, onLogout, onUserUpdate }) {
 
   if (loading) {
     return (
-      <div className="adm-loading">
-        <i className="fa-solid fa-spinner fa-spin" />
-        <p>Cargando panel de administración...</p>
+      <div data-testid="admin-dashboard">
+        <DashboardSkeleton label="Cargando panel de administración..." />
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="adm-loading">
-        <i className="fa-solid fa-triangle-exclamation" />
-        <p>{error}</p>
-        <button onClick={loadDashboard}>Reintentar</button>
+      <div className="adm-layout" data-testid="admin-dashboard">
+        <div className="adm-main">
+          <div className="adm-card">
+            <EmptyState
+              icon="fa-triangle-exclamation"
+              title="No pudimos cargar el panel"
+              description={error}
+              action={
+                <button className="dash-btn-primary" type="button" onClick={loadDashboard}>
+                  Reintentar
+                </button>
+              }
+            />
+          </div>
+        </div>
       </div>
     )
   }
@@ -90,7 +109,7 @@ function AdminDashboard({ user, onLogout, onUserUpdate }) {
         onLogout={onLogout}
       />
 
-      <main className="adm-main">
+      <main className="adm-main" id="contenido">
         {(activeTab === 'dashboard' || activeTab === 'reportes') && (
           <>
             <AdminStats stats={data?.stats} userName={user?.name} />

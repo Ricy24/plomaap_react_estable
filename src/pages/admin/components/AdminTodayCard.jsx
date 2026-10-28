@@ -24,7 +24,7 @@ function AdminTodayCard({ stats }) {
           <span>En curso</span>
         </div>
       </div>
-      <div className="adm-dot-grid">
+      <div className="adm-dot-grid" aria-hidden="true">
         {dots.map((type, i) => (
           <span key={i} className={`adm-dot ${type}`} />
         ))}

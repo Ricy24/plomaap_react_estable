@@ -10,7 +10,7 @@ function StatRing({ label, value, percent, variant = 'default' }) {
             <div className="adm-stat-bar-fill" style={{ width: `${percent}%` }} />
           </div>
         ) : (
-          <svg viewBox="0 0 80 80" className="adm-ring-svg">
+          <svg viewBox="0 0 80 80" className="adm-ring-svg" aria-hidden="true" focusable="false">
             <circle cx="40" cy="40" r="36" className="adm-ring-bg" />
             <circle
               cx="40" cy="40" r="36"

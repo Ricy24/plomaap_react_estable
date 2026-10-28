@@ -1,18 +1,18 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { authApi } from '../../services/api'
 import { useAuth } from '../../context/AuthContext'
 import { validateLogin } from '../../utils/validation'
 import ForgotPassword from './ForgotPassword'
+import AuthLayout from '../../components/auth/AuthLayout'
 import '../../styles/auth.css'
 
 function TechnicianAuth() {
-  const navigate = useNavigate()
   const { login } = useAuth()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [fieldErrors, setFieldErrors] = useState({})
   const [showForgot, setShowForgot] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({ email: '', password: '' })
 
   const handleSubmit = async (e) => {
@@ -45,80 +45,112 @@ function TechnicianAuth() {
   }
 
   return (
-    <div className="auth-wrapper view-transition">
+    <>
       {showForgot && <ForgotPassword onClose={() => setShowForgot(false)} />}
 
-      <div className="auth-layout">
-        <button className="btn-back" onClick={() => navigate('/ingresar')}>
-          <i className="fa-solid fa-arrow-left" /> Volver
-        </button>
-
-        <div className="auth-container">
-          <div className="auth-form-side">
-            <div className="auth-form-content">
-              <div className="auth-header">
-                <div className="logo-box"><div className="logo-dot" /><span>PlomApp</span></div>
-                <span className="auth-role-badge technician">Acceso Técnico</span>
-                <h2 className="auth-title">Panel de técnicos</h2>
-                <p className="auth-subtitle">Ingresa para ver tus citas, horarios y servicios del día.</p>
-              </div>
-
-              <form onSubmit={handleSubmit} className="auth-form" noValidate>
-                <div className="input-group">
-                  <label>Correo electrónico</label>
-                  <div className={`input-wrapper ${fieldErrors.email ? 'has-error' : ''}`}>
-                    <i className="fa-regular fa-envelope" />
-                    <input type="email" name="email" data-testid="auth-email" placeholder="tecnico@mail.com"
-                      value={formData.email}
-                      onChange={e => { setFormData({ ...formData, email: e.target.value }); setFieldErrors({}); setError('') }}
-                    />
-                  </div>
-                  {fieldErrors.email && <p className="field-error">{fieldErrors.email}</p>}
-                </div>
-
-                <div className="input-group">
-                  <label>Contraseña</label>
-                  <div className={`input-wrapper ${fieldErrors.password ? 'has-error' : ''}`}>
-                    <i className="fa-solid fa-lock" />
-                    <input type="password" name="password" data-testid="auth-password" placeholder="••••••••"
-                      value={formData.password}
-                      onChange={e => { setFormData({ ...formData, password: e.target.value }); setFieldErrors({}); setError('') }}
-                    />
-                  </div>
-                  {fieldErrors.password && <p className="field-error">{fieldErrors.password}</p>}
-                </div>
-
-                <button type="button" className="forgot-pass-btn" onClick={() => setShowForgot(true)}>
-                  ¿Olvidaste tu contraseña?
-                </button>
-
-                {error && <div className="error-message">{error}</div>}
-
-                <button type="submit" className="btn-auth-submit technician-submit" data-testid="auth-submit" disabled={loading}>
-                  {loading ? 'Verificando...' : 'Iniciar sesión'}
-                </button>
-              </form>
-
-              {import.meta.env.DEV && (
-                <div className="tech-demo-hint">
-                  <p><i className="fa-solid fa-circle-info" /> Casos de prueba (CP07):</p>
-                  <p>tecnico@mail.com · Contraseña: <strong>T3cnic0_2026</strong></p>
-                </div>
-              )}
+      <AuthLayout
+        badge="Acceso técnico"
+        tone="technician"
+        backTo="/ingresar"
+        title="Panel de técnicos"
+        subtitle="Ingresa para ver tus citas, horarios y servicios del día."
+        visualIcon="fa-user-gear"
+        visualTitle="Gestiona tus servicios."
+        visualText="Consulta citas, actualiza estados y organiza tu jornada de trabajo."
+        highlights={[
+          'Agenda y estados siempre sincronizados',
+          'Clientes verificados y direcciones exactas',
+          'Define tu disponibilidad semanal',
+        ]}
+        footer={
+          <p className="auth-switch">
+            ¿Aún no eres parte de la red? <a href="mailto:tecnicos@plomapp.co">Escríbenos</a>
+          </p>
+        }
+      >
+        <form onSubmit={handleSubmit} className="auth-form" noValidate>
+          <div className="input-group">
+            <label htmlFor="tech-email">Correo electrónico</label>
+            <div className={`input-wrapper ${fieldErrors.email ? 'has-error' : ''}`}>
+              <i className="fa-regular fa-envelope" aria-hidden="true" />
+              <input
+                id="tech-email"
+                type="email"
+                name="email"
+                data-testid="auth-email"
+                placeholder="tecnico@mail.com"
+                autoComplete="email"
+                inputMode="email"
+                value={formData.email}
+                aria-invalid={Boolean(fieldErrors.email)}
+                aria-describedby={fieldErrors.email ? 'tech-email-error' : undefined}
+                onChange={e => {
+                  setFormData({ ...formData, email: e.target.value })
+                  setFieldErrors({})
+                  setError('')
+                }}
+              />
             </div>
+            {fieldErrors.email && <p id="tech-email-error" className="field-error">{fieldErrors.email}</p>}
           </div>
 
-          <div className="auth-visual-side tech-visual">
-            <div className="visual-overlay" />
-            <div className="visual-content">
-              <div className="trust-badge"><i className="fa-solid fa-user-gear" /></div>
-              <h3>Gestiona tus servicios.</h3>
-              <p>Consulta citas, actualiza estados y organiza tu jornada de trabajo.</p>
+          <div className="input-group">
+            <label htmlFor="tech-password">Contraseña</label>
+            <div className={`input-wrapper ${fieldErrors.password ? 'has-error' : ''}`}>
+              <i className="fa-solid fa-lock" aria-hidden="true" />
+              <input
+                id="tech-password"
+                type={showPassword ? 'text' : 'password'}
+                name="password"
+                data-testid="auth-password"
+                placeholder="••••••••"
+                autoComplete="current-password"
+                value={formData.password}
+                aria-invalid={Boolean(fieldErrors.password)}
+                aria-describedby={fieldErrors.password ? 'tech-password-error' : undefined}
+                onChange={e => {
+                  setFormData({ ...formData, password: e.target.value })
+                  setFieldErrors({})
+                  setError('')
+                }}
+              />
+              <button
+                type="button"
+                className="toggle-password-btn"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+              >
+                <i className={`fa-solid fa-eye${showPassword ? '' : '-slash'}`} aria-hidden="true" />
+              </button>
             </div>
+            {fieldErrors.password && <p id="tech-password-error" className="field-error">{fieldErrors.password}</p>}
           </div>
-        </div>
-      </div>
-    </div>
+
+          <button type="button" className="forgot-pass-btn" onClick={() => setShowForgot(true)}>
+            ¿Olvidaste tu contraseña?
+          </button>
+
+          {error && (
+            <div className="error-message" role="alert">
+              <i className="fa-solid fa-circle-exclamation" aria-hidden="true" />
+              <span>{error}</span>
+            </div>
+          )}
+
+          <button type="submit" className="btn-auth-submit" data-testid="auth-submit" disabled={loading}>
+            {loading && <span className="spinner" aria-hidden="true" />}
+            {loading ? 'Verificando…' : 'Iniciar sesión'}
+          </button>
+        </form>
+
+        {import.meta.env.DEV && (
+          <div className="tech-demo-hint">
+            <p><i className="fa-solid fa-circle-info" aria-hidden="true" /> Datos de prueba (CP07)</p>
+            <p>tecnico@mail.com · Contraseña: <strong>T3cnic0_2026</strong></p>
+          </div>
+        )}
+      </AuthLayout>
+    </>
   )
 }
 

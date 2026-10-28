@@ -1,20 +1,32 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import { AuthProvider, useAuth } from './context/AuthContext.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
+import { FeedbackProvider } from './components/ui/FeedbackProvider.jsx'
 import Home from './pages/Home.jsx'
 import LoginSelector from './pages/auth/LoginSelector.jsx'
-import ClientAuth from './pages/auth/ClientAuth.jsx'
-import TechnicianAuth from './pages/auth/TechnicianAuth.jsx'
-import AdminAuth from './pages/auth/AdminAuth.jsx'
-import ClientDashboard from './pages/client/ClientDashboard.jsx'
-import TechnicianDashboard from './pages/technician/TechnicianDashboard.jsx'
-import AdminDashboard from './pages/admin/AdminDashboard.jsx'
 import { env } from './config/env.js'
+
+const ClientAuth = lazy(() => import('./pages/auth/ClientAuth.jsx'))
+const TechnicianAuth = lazy(() => import('./pages/auth/TechnicianAuth.jsx'))
+const AdminAuth = lazy(() => import('./pages/auth/AdminAuth.jsx'))
+const ClientDashboard = lazy(() => import('./pages/client/ClientDashboard.jsx'))
+const TechnicianDashboard = lazy(() => import('./pages/technician/TechnicianDashboard.jsx'))
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard.jsx'))
+
+function RouteFallback() {
+  return (
+    <div className="route-fallback" role="status" aria-live="polite">
+      <span className="route-fallback__spinner" aria-hidden="true" />
+      <p>Cargando…</p>
+    </div>
+  )
+}
 
 function GuestOnly({ children }) {
   const { user, ready, dashboardPath } = useAuth()
-  if (!ready) return null
+  if (!ready) return <RouteFallback />
   if (user) {
     return <Navigate to={dashboardPath} replace />
   }
@@ -23,7 +35,7 @@ function GuestOnly({ children }) {
 
 function PublicHome() {
   const { user, ready, dashboardPath } = useAuth()
-  if (!ready) return null
+  if (!ready) return <RouteFallback />
   if (user) {
     return <Navigate to={dashboardPath} replace />
   }
@@ -98,9 +110,16 @@ function AppRoutes() {
 function App() {
   const app = (
     <BrowserRouter>
-      <AuthProvider>
-        <AppRoutes />
-      </AuthProvider>
+      <FeedbackProvider>
+        <AuthProvider>
+          <a className="skip-link" href="#contenido">
+            Saltar al contenido
+          </a>
+          <Suspense fallback={<RouteFallback />}>
+            <AppRoutes />
+          </Suspense>
+        </AuthProvider>
+      </FeedbackProvider>
     </BrowserRouter>
   )
 

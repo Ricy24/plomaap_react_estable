@@ -19,7 +19,13 @@ function AdminSchedule({ weekCalendar, todaySchedule }) {
 
       <div className="adm-week-strip">
         {weekCalendar?.map(day => (
-          <button key={day.date} className={`adm-day-pill ${day.isToday ? 'active' : ''}`}>
+          <button
+            key={day.date}
+            type="button"
+            className={`adm-day-pill ${day.isToday ? 'active' : ''}`}
+            aria-current={day.isToday ? 'date' : undefined}
+            aria-label={`${day.label} ${day.dayNum}${day.count ? `, ${day.count} citas` : ''}`}
+          >
             <span className="adm-day-label">{day.label}</span>
             <span className="adm-day-num">{day.dayNum}</span>
             {day.count > 0 && <span className="adm-day-dot" />}

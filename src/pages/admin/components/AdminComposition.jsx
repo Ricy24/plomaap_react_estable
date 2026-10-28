@@ -1,6 +1,6 @@
 function AdminComposition({ composition, serviceBreakdown }) {
   const total = composition?.total || 1
-  const clientPct = Math.round((composition?.clients / total) * 100)
+  const clientPct = Math.round(((composition?.clients || 0) / total) * 100)
   const techPct = 100 - clientPct
 
   return (
@@ -10,7 +10,9 @@ function AdminComposition({ composition, serviceBreakdown }) {
       <div className="adm-donut-wrap">
         <div
           className="adm-donut"
-          style={{ background: `conic-gradient(#FFC107 0% ${clientPct}%, #E2E8F0 ${clientPct}% 100%)` }}
+          role="img"
+          aria-label={`${clientPct}% clientes y ${techPct}% técnicos`}
+          style={{ background: `conic-gradient(var(--amber-400) 0% ${clientPct}%, var(--ink-200) ${clientPct}% 100%)` }}
         >
           <div className="adm-donut-hole">
             <strong>{composition?.total || 0}</strong>
