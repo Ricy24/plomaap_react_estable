@@ -30,6 +30,25 @@ function clearSession() {
   localStorage.removeItem('technicianProfile')
 }
 
+/**
+ * El backend responde algunos mensajes en inglés (contrato heredado de Flask).
+ * Se traducen aquí para no romper el contrato ni mostrar texto en otro idioma.
+ */
+const MESSAGE_TRANSLATIONS = {
+  'Email already registered': 'Este correo ya está registrado.',
+  'Invalid credentials': 'Correo o contraseña incorrectos.',
+  'Missing required fields': 'Faltan datos obligatorios.',
+  'User not found': 'Usuario no encontrado.',
+  Unauthorized: 'Tu sesión expiró. Inicia sesión de nuevo.',
+  Forbidden: 'No tienes permisos para realizar esta acción.',
+  'Not found': 'El recurso solicitado no existe.',
+}
+
+export function translateApiMessage(message) {
+  if (!message) return message
+  return MESSAGE_TRANSLATIONS[message] || message
+}
+
 export async function apiFetch(path, options = {}) {
   let token = localStorage.getItem('authToken')
 
@@ -62,7 +81,11 @@ export async function apiFetch(path, options = {}) {
       if (response.status === 401 || response.status === 422) {
         clearSession()
       }
-      throw new Error(data.message || data.error || 'Error en la solicitud')
+      const error = new Error(
+        translateApiMessage(data.message || data.error || 'Error en la solicitud')
+      )
+      error.status = response.status
+      throw error
     }
 
     return data

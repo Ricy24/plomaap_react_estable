@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { GoogleLogin } from '@react-oauth/google'
-import { authApi } from '../../services/api'
+import { authApi, translateApiMessage } from '../../services/api'
 import { env } from '../../config/env'
 import { useAuth } from '../../context/AuthContext'
 import { uploadImageToCloudinary } from '../../utils/cloudinary'
@@ -140,7 +140,7 @@ function ClientAuth() {
       if (isLogin) {
         const data = await authApi.login(formData.email.trim(), formData.password, 'customer');
         if (!data.success) {
-          setError(data.message);
+          setError(translateApiMessage(data.message));
           return;
         }
         if (data.user?.role !== 'customer' && data.user?.role !== 'user') {
@@ -160,7 +160,7 @@ function ClientAuth() {
           avatar: formData.avatar
         });
         if (!data.success) {
-          setError(data.message);
+          setError(translateApiMessage(data.message));
           return;
         }
         setSuccess(data.message || MESSAGES.registerSuccess);
@@ -171,8 +171,13 @@ function ClientAuth() {
           address: prev.address
         }));
       }
-    } catch {
-      setError('Error de conexión. Verifica que el backend esté corriendo.');
+    } catch (err) {
+      if (err?.status === 409) {
+        setFieldErrors({ email: 'Ya existe una cuenta con este correo. Inicia sesión o usa otro correo.' });
+        setError('Ya existe una cuenta con este correo electrónico.');
+      } else {
+        setError(err?.message || 'No se pudo completar la solicitud. Intenta de nuevo.');
+      }
     } finally {
       setLoading(false);
     }
