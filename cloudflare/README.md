@@ -35,6 +35,13 @@ resuelve con `not_found_handling = "single-page-application"` en
   - `RL_AUTH` 10 req/60 s → `/api/auth/*` (frena fuerza bruta en login/registro)
   - `RL_WRITE` 40 req/60 s → POST/PUT/PATCH/DELETE
   - `RL_READ` 240 req/60 s → GET/HEAD
+- **Caché de edge** para `GET /api/services` (TTL 300 s, `X-Cache: HIT/MISS`).
+  Solo se cachea el cuerpo y el `Content-Type`; el CORS se reconstruye por
+  petición, porque Django responde con `Access-Control-Allow-Origin` eco del
+  origen y una caché compartida serviría el de otro cliente. Las respuestas
+  autenticadas **no** se cachean.
+- **HSTS** (`max-age=31536000`), `nosniff` y `Referrer-Policy` en todas las
+  respuestas del Worker y del front.
 - **Límite de cuerpo** 12 MB (413 antes de tocar Django).
 - **Bloqueo de sondeos**: `/.env`, `/.git`, `*.php`, `/wp-*` → 404.
 - **Oculta la IP de Oracle** y añade `X-Real-Client-IP`.
