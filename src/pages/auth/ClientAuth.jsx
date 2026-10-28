@@ -163,8 +163,8 @@ function ClientAuth() {
           setError(translateApiMessage(data.message));
           return;
         }
-        setSuccess(data.message || MESSAGES.registerSuccess);
         switchMode(true);
+        setSuccess(data.message || MESSAGES.registerSuccess);
         setFormData(prev => ({
           ...EMPTY_FORM,
           email: prev.email,
